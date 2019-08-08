@@ -1,7 +1,7 @@
 ﻿/*
  * PROJECT:   Nit - A Windows Image Tweaker based on DismCore
  * FILE:      DismCore.h
- * PURPOSE:   Definition for the DismCore interfaces
+ * PURPOSE:   Definition for the DismCore interfaces (10.0.18362)
  *
  * LICENSE:   The MIT License
  *
@@ -1943,12 +1943,6 @@ IDismDriverPackage4 : IDismDriverPackage3
         /*[in]*/ long Architecture ) = 0;
 };
 
-//
-// Named GUID constants initializations
-//
-
-extern "C" const GUID __declspec(selectany) LIBID_DismLib =
-    {0x5d8578f4,0xa3cf,0x40a9,{0x8f,0x54,0xd4,0xea,0x88,0x75,0x74,0xa0}};
 extern "C" const GUID __declspec(selectany) IID_IDismLogger =
     {0xbd7fc505,0x69bc,0x49cb,{0x8c,0x58,0x1d,0x1d,0xa5,0x47,0xb7,0xe2}};
 extern "C" const GUID __declspec(selectany) IID_IDismObject =
