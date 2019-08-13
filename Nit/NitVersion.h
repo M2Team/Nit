@@ -13,18 +13,20 @@
 #ifndef NIT_VER
 #define NIT_VER
 
+// Compliant with the Semantic Versioning 2.0.0 specification.
+
 #define NIT_VER_MAJOR 0
 #define NIT_VER_MINOR 1
-#define NIT_VER_BUILD 0
-#define NIT_VER_REV 0
+#define NIT_VER_PATCH 0
+
 #endif
 
 #ifndef NIT_VER_FMT_COMMA
-#define NIT_VER_FMT_COMMA NIT_VER_MAJOR,NIT_VER_MINOR,NIT_VER_BUILD,NIT_VER_REV
+#define NIT_VER_FMT_COMMA NIT_VER_MAJOR,NIT_VER_MINOR,NIT_VER_PATCH,0
 #endif
 
 #ifndef NIT_VER_FMT_DOT
-#define NIT_VER_FMT_DOT NIT_VER_MAJOR.NIT_VER_MINOR.NIT_VER_BUILD.NIT_VER_REV
+#define NIT_VER_FMT_DOT NIT_VER_MAJOR.NIT_VER_MINOR.NIT_VER_PATCH.0
 #endif
 
 
