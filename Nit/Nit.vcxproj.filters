@@ -5,5 +5,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DismCore.h" />
+    <ClInclude Include="NitVersion.h">
+      <Filter>NitVersion</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="NitVersion">
+      <UniqueIdentifier>{2fe6443c-ddda-4bae-a4cf-c4eea1786e42}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NitVersion.rc">
+      <Filter>NitVersion</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -97,6 +97,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DismCore.h" />
+    <ClInclude Include="NitVersion.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NitVersion.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
