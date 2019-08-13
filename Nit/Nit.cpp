@@ -151,8 +151,8 @@ typedef struct _M2_FILE_ENUMERATOR_INFORMATION
     FILETIME LastAccessTime;
     FILETIME LastWriteTime;
     FILETIME ChangeTime;
-    LARGE_INTEGER FileSize;
-    LARGE_INTEGER AllocationSize;
+    UINT64 FileSize;
+    UINT64 AllocationSize;
     DWORD FileAttributes;
     DWORD EaSize;
     LARGE_INTEGER FileId;
@@ -313,30 +313,38 @@ DWORD M2QueryFileEnumerator(
     {
         PFILE_ID_BOTH_DIR_INFO CurrentFileInfo = Object->CurrentFileInfo;
 
-        FileEnumeratorInformation->CreationTime.dwHighDateTime =
-            CurrentFileInfo->CreationTime.HighPart;
         FileEnumeratorInformation->CreationTime.dwLowDateTime =
             CurrentFileInfo->CreationTime.LowPart;
-        FileEnumeratorInformation->LastAccessTime.dwHighDateTime =
-            CurrentFileInfo->LastAccessTime.HighPart;
+        FileEnumeratorInformation->CreationTime.dwHighDateTime =
+            CurrentFileInfo->CreationTime.HighPart;
+        
         FileEnumeratorInformation->LastAccessTime.dwLowDateTime =
             CurrentFileInfo->LastAccessTime.LowPart;
-        FileEnumeratorInformation->LastWriteTime.dwHighDateTime =
-            CurrentFileInfo->LastWriteTime.HighPart;
+        FileEnumeratorInformation->LastAccessTime.dwHighDateTime =
+            CurrentFileInfo->LastAccessTime.HighPart;
+        
         FileEnumeratorInformation->LastWriteTime.dwLowDateTime =
             CurrentFileInfo->LastWriteTime.LowPart;
-        FileEnumeratorInformation->ChangeTime.dwHighDateTime =
-            CurrentFileInfo->ChangeTime.HighPart;
+        FileEnumeratorInformation->LastWriteTime.dwHighDateTime =
+            CurrentFileInfo->LastWriteTime.HighPart;
+        
         FileEnumeratorInformation->ChangeTime.dwLowDateTime =
             CurrentFileInfo->ChangeTime.LowPart;
+        FileEnumeratorInformation->ChangeTime.dwHighDateTime =
+            CurrentFileInfo->ChangeTime.HighPart;
+
         FileEnumeratorInformation->FileSize =
-            CurrentFileInfo->EndOfFile;
+            CurrentFileInfo->EndOfFile.QuadPart;
+
         FileEnumeratorInformation->AllocationSize =
-            CurrentFileInfo->AllocationSize;
+            CurrentFileInfo->AllocationSize.QuadPart;
+
         FileEnumeratorInformation->FileAttributes =
             CurrentFileInfo->FileAttributes;
+
         FileEnumeratorInformation->EaSize =
             CurrentFileInfo->EaSize;
+
         FileEnumeratorInformation->FileId =
             CurrentFileInfo->FileId;
 
