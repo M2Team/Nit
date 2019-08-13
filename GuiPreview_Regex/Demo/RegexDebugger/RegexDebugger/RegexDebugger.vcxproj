@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C7E46112-49E9-4DF5-86AF-E78D2A5866B3}</ProjectGuid>
+    <RootNamespace>RegexDebugger</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>16.0.29124.152</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Library\Data\Data\VL_Data_Basic.cpp" />
+    <ClCompile Include="..\..\..\Library\Data\Data\VL_Data_Iterator.cpp" />
+    <ClCompile Include="..\..\..\Library\Data\Data\VL_Data_String.cpp" />
+    <ClCompile Include="..\..\..\Library\Data\Grammar2\VL_Regexp.cpp" />
+    <ClCompile Include="..\..\..\Library\Data\Grammar2\VL_RegFA.cpp" />
+    <ClCompile Include="..\..\..\Library\Data\Grammar2\VL_RegSim.cpp" />
+    <ClCompile Include="..\..\..\Library\Data\Grammar2\VL_RegTools.cpp" />
+    <ClCompile Include="..\..\..\Library\Data\VL_Data.cpp" />
+    <ClCompile Include="..\..\..\Library\Data\VL_Stream.cpp" />
+    <ClCompile Include="..\..\..\Library\Data\VL_System.cpp" />
+    <ClCompile Include="..\..\..\Library\Data\VL_Uniop.cpp" />
+    <ClCompile Include="..\..\..\Library\Windows\Commctrl\VL_WinButton.cpp" />
+    <ClCompile Include="..\..\..\Library\Windows\Commctrl\VL_WinContainers.cpp" />
+    <ClCompile Include="..\..\..\Library\Windows\Commctrl\VL_WinRatio.cpp" />
+    <ClCompile Include="..\..\..\Library\Windows\Commctrl\VL_WinText.cpp" />
+    <ClCompile Include="..\..\..\Library\Windows\Commctrl\VL_WinView.cpp" />
+    <ClCompile Include="..\..\..\Library\Windows\VL_WinClass.cpp" />
+    <ClCompile Include="..\..\..\Library\Windows\VL_WinCommDlg.cpp" />
+    <ClCompile Include="..\..\..\Library\Windows\VL_WinGDI.cpp" />
+    <ClCompile Include="..\..\..\Library\Windows\VL_WinMain.cpp" />
+    <ClCompile Include="GeneralRegex.cpp" />
+    <ClCompile Include="Program.cpp" />
+    <ClCompile Include="RegexHelper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Library\Data\Data\VL_Data_BalanceTree.h" />
+    <ClInclude Include="..\..\..\Library\Data\Data\VL_Data_Basic.h" />
+    <ClInclude Include="..\..\..\Library\Data\Data\VL_Data_Bintree.h" />
+    <ClInclude Include="..\..\..\Library\Data\Data\VL_Data_Chain.h" />
+    <ClInclude Include="..\..\..\Library\Data\Data\VL_Data_CustomBintree.h" />
+    <ClInclude Include="..\..\..\Library\Data\Data\VL_Data_Event.h" />
+    <ClInclude Include="..\..\..\Library\Data\Data\VL_Data_Iterator.h" />
+    <ClInclude Include="..\..\..\Library\Data\Data\VL_Data_List.h" />
+    <ClInclude Include="..\..\..\Library\Data\Data\VL_Data_Map.h" />
+    <ClInclude Include="..\..\..\Library\Data\Data\VL_Data_Pool.h" />
+    <ClInclude Include="..\..\..\Library\Data\Data\VL_Data_SearchTree.h" />
+    <ClInclude Include="..\..\..\Library\Data\Data\VL_Data_String.h" />
+    <ClInclude Include="..\..\..\Library\Data\Grammar2\VL_Automaton.h" />
+    <ClInclude Include="..\..\..\Library\Data\Grammar2\VL_Regexp.h" />
+    <ClInclude Include="..\..\..\Library\Data\Grammar2\VL_RegFA.h" />
+    <ClInclude Include="..\..\..\Library\Data\Grammar2\VL_RegSim.h" />
+    <ClInclude Include="..\..\..\Library\Data\Grammar2\VL_RegTools.h" />
+    <ClInclude Include="..\..\..\Library\Data\VL_Data.h" />
+    <ClInclude Include="..\..\..\Library\Data\VL_Stream.h" />
+    <ClInclude Include="..\..\..\Library\Data\VL_System.h" />
+    <ClInclude Include="..\..\..\Library\Data\VL_Uniop.h" />
+    <ClInclude Include="..\..\..\Library\Windows\Commctrl\VL_WinButton.h" />
+    <ClInclude Include="..\..\..\Library\Windows\Commctrl\VL_WinContainers.h" />
+    <ClInclude Include="..\..\..\Library\Windows\Commctrl\VL_WinRatio.h" />
+    <ClInclude Include="..\..\..\Library\Windows\Commctrl\VL_WinText.h" />
+    <ClInclude Include="..\..\..\Library\Windows\Commctrl\VL_WinView.h" />
+    <ClInclude Include="..\..\..\Library\Windows\VL_WinClass.h" />
+    <ClInclude Include="..\..\..\Library\Windows\VL_WinCommDlg.h" />
+    <ClInclude Include="..\..\..\Library\Windows\VL_WinGDI.h" />
+    <ClInclude Include="..\..\..\Library\Windows\VL_WinGUI.h" />
+    <ClInclude Include="..\..\..\Library\Windows\VL_WinMain.h" />
+    <ClInclude Include="GeneralRegex.h" />
+    <ClInclude Include="RegexHelper.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
