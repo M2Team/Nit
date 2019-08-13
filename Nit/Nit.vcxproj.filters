@@ -13,10 +13,21 @@
     <Filter Include="NitVersion">
       <UniqueIdentifier>{2fe6443c-ddda-4bae-a4cf-c4eea1786e42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NitManifest">
+      <UniqueIdentifier>{49fb9111-6caa-46c3-8bdc-8d8a6929debd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NitVersion.rc">
       <Filter>NitVersion</Filter>
     </ResourceCompile>
+    <ResourceCompile Include="NitManifest.rc">
+      <Filter>NitManifest</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="NitManifest.manifest">
+      <Filter>NitManifest</Filter>
+    </Manifest>
   </ItemGroup>
 </Project>

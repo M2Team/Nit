@@ -64,6 +64,7 @@
     <IntDir>$(SolutionDir)Output\$(Configuration)\$(Platform)\Build\$(MSBuildProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)'=='Debug'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)'=='Release'">false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -91,6 +92,9 @@
       <EnableCOMDATFolding Condition="'$(Configuration)'=='Release'">true</EnableCOMDATFolding>
       <OptimizeReferences Condition="'$(Configuration)'=='Release'">true</OptimizeReferences>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>NitManifest.manifest %(AdditionalManifestFiles)</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Nit.cpp" />
@@ -100,7 +104,11 @@
     <ClInclude Include="NitVersion.h" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="NitManifest.rc" />
     <ResourceCompile Include="NitVersion.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="NitManifest.manifest" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
