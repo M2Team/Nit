@@ -377,7 +377,7 @@ IDismObject : IDispatch
 {
     virtual HRESULT STDMETHODCALLTYPE OnConnect(
         _In_ IUnknown * Parent,
-        _In_ struct IDismLogger* DismLogger) = 0;
+        _In_ IDismLogger* DismLogger) = 0;
     virtual HRESULT STDMETHODCALLTYPE OnDisconnect() = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Parent(
         _Out_ IUnknown** Parent) = 0;
@@ -399,7 +399,7 @@ IDismProviderCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismProvider** ppProvider) = 0;
+        _Out_ IDismProvider** ppProvider) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -429,29 +429,29 @@ IDismProviderStore : IDismObject
 {
     virtual HRESULT STDMETHODCALLTYPE GetProvider(
         _In_ BSTR providerName,
-        _Out_ struct IDismProvider** Provider) = 0;
+        _Out_ IDismProvider** Provider) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetExternalProvider(
         _In_ BSTR providerName,
-        _Out_ struct IDismProvider** Provider) = 0;
+        _Out_ IDismProvider** Provider) = 0;
     virtual HRESULT STDMETHODCALLTYPE AddProvider(
         _In_ BSTR RelativeProviderLocation) = 0;
     virtual HRESULT STDMETHODCALLTYPE RemoveProvider(
         _In_ BSTR providerName) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetProviderCollection(
-        _Out_ struct IDismProviderCollection** Providers) = 0;
+        _Out_ IDismProviderCollection** Providers) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_DismImage(
-        _Out_ struct IDismImage** DismImage) = 0;
+        _Out_ IDismImage** DismImage) = 0;
 };
 
 MIDL_INTERFACE("a08538a6-b9ff-47c2-b228-b93612ef114b")
 IDismImageSession : IDismObject
 {
     virtual HRESULT STDMETHODCALLTYPE get_ProviderStore(
-        _Out_ struct IDismProviderStore** ProviderStore) = 0;
+        _Out_ IDismProviderStore** ProviderStore) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_ImageState(
         _Out_ DISM_SESSION_STATE* State) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_DismImage(
-        _Out_ struct IDismImage** DismImage) = 0;
+        _Out_ IDismImage** DismImage) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_SessionType(
         _Out_ DISM_SESSION_TYPE* SessionType) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_SessionVersion(
@@ -462,18 +462,18 @@ MIDL_INTERFACE("4d4fce31-f767-45e4-b2e9-5400e3e1389a")
 IDismManager : IDispatch
 {
     virtual HRESULT STDMETHODCALLTYPE get_Logger(
-        _Out_ struct IDismLogger** pVal) = 0;
+        _Out_ IDismLogger** pVal) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetLocalProviderStore(
-        _Out_ struct IDismProviderStore** ppUnknown) = 0;
+        _Out_ IDismProviderStore** ppUnknown) = 0;
     virtual HRESULT STDMETHODCALLTYPE CreateImageSession(
-        _In_ struct IDismImage* pImage,
-        _Out_ struct IDismImageSession** ppUnknown) = 0;
+        _In_ IDismImage* pImage,
+        _Out_ IDismImageSession** ppUnknown) = 0;
     virtual HRESULT STDMETHODCALLTYPE CloseImageSession(
-        _In_ struct IDismImageSession* pImageSession,
+        _In_ IDismImageSession* pImageSession,
         _Out_ DISM_SESSION_STATE* State) = 0;
     virtual HRESULT STDMETHODCALLTYPE Close() = 0;
     virtual HRESULT STDMETHODCALLTYPE ValidateDismTarget(
-        _In_ struct IDismImage* pImage,
+        _In_ IDismImage* pImage,
         _Out_ VARIANT_BOOL* pvbDismTargetValid) = 0;
 };
 
@@ -487,20 +487,20 @@ IDismEventManager : IUnknown
     virtual HRESULT STDMETHODCALLTYPE OnInitiate(
         _In_ BSTR providerName,
         _In_ BSTR ActionName,
-        _In_ struct IDismImage* Image,
+        _In_ IDismImage* Image,
         _In_ BSTR message,
         _Inout_ LPINT Response) = 0;
     virtual HRESULT STDMETHODCALLTYPE OnError(
         _In_ BSTR providerName,
         _In_ BSTR ActionName,
-        _In_ struct IDismImage* Image,
+        _In_ IDismImage* Image,
         _In_ SCODE errorCode,
         _In_ BSTR message,
         _Inout_ LPINT Response) = 0;
     virtual HRESULT STDMETHODCALLTYPE OnProgress(
         _In_ BSTR providerName,
         _In_ BSTR ActionName,
-        _In_ struct IDismImage* Image,
+        _In_ IDismImage* Image,
         _In_ LONG ticks,
         _In_ LONG totalTicks,
         _In_ BSTR message,
@@ -508,12 +508,12 @@ IDismEventManager : IUnknown
     virtual HRESULT STDMETHODCALLTYPE OnTerminate(
         _In_ BSTR providerName,
         _In_ BSTR ActionName,
-        _In_ struct IDismImage* Image,
+        _In_ IDismImage* Image,
         _In_ BSTR message) = 0;
     virtual HRESULT STDMETHODCALLTYPE OnCLIOutput(
         _In_ BSTR providerName,
         _In_ BSTR ActionName,
-        _In_ struct IDismImage* Image,
+        _In_ IDismImage* Image,
         _In_ BSTR message,
         _Inout_ LPINT Response) = 0;
 };
@@ -536,7 +536,7 @@ IDismErrorCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismError** Error) = 0;
+        _Out_ IDismError** Error) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -567,7 +567,7 @@ IDismImageInfo : IDispatch
     virtual HRESULT STDMETHODCALLTYPE Mount(
         _In_ BSTR bszMountPath,
         _In_ ULONG ulFlags,
-        _Out_ struct IDismImage** ppDISMImage) = 0;
+        _Out_ IDismImage** ppDISMImage) = 0;
 };
 
 MIDL_INTERFACE("572f3374-7dae-47ab-88af-bd6ca29252fe")
@@ -577,7 +577,7 @@ IDismImageInfoCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismImageInfo** ppDismImageInfo) = 0;
+        _Out_ IDismImageInfo** ppDismImageInfo) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -604,7 +604,7 @@ IDismMountedImageInfoCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismMountedImageInfo** ppDismMountedImageInfo) = 0;
+        _Out_ IDismMountedImageInfo** ppDismMountedImageInfo) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -614,12 +614,12 @@ IDismImageManager : IDismObject
 {
     virtual HRESULT STDMETHODCALLTYPE GetImageInfoCollection(
         _In_ BSTR bszPath,
-        _Out_ struct IDismImageInfoCollection** ppImageInfoCollection) = 0;
+        _Out_ IDismImageInfoCollection** ppImageInfoCollection) = 0;
     virtual HRESULT STDMETHODCALLTYPE CreateDismImage(
         _In_ BSTR bszPath,
-        _Out_ struct IDismImage** ppDISMImage) = 0;
+        _Out_ IDismImage** ppDISMImage) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetMountedImageInfoCollection(
-        _Out_ struct IDismMountedImageInfoCollection** ppMountedImageInfoCollection) = 0;
+        _Out_ IDismMountedImageInfoCollection** ppMountedImageInfoCollection) = 0;
     virtual HRESULT STDMETHODCALLTYPE CleanupMountpoints() = 0;
 };
 
@@ -631,7 +631,7 @@ IDismImageSessionPrivate : IDispatch
     virtual HRESULT STDMETHODCALLTYPE put_ImageState(
         _In_ DISM_SESSION_STATE _arg1) = 0;
     virtual HRESULT STDMETHODCALLTYPE put_DismImage(
-        _In_ struct IDismImage* _arg1) = 0;
+        _In_ IDismImage* _arg1) = 0;
     virtual HRESULT STDMETHODCALLTYPE put_SessionType(
         _In_ DISM_SESSION_TYPE _arg1) = 0;
     virtual HRESULT STDMETHODCALLTYPE ReleaseHostManager() = 0;
@@ -727,7 +727,7 @@ IDismPropertyCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismProperty** ppProperty) = 0;
+        _Out_ IDismProperty** ppProperty) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -766,7 +766,7 @@ IDismOSServiceManager : IDispatch
     virtual HRESULT STDMETHODCALLTYPE get_Architecture(
         _Out_ LPLONG Architecture) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_DismImage(
-        _Out_ struct IDismImage** DismImage) = 0;
+        _Out_ IDismImage** DismImage) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_ServicingStackDirectory(
         _Out_ LPBSTR ServicingStackDirectory) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_WindowsDirectory(
@@ -782,14 +782,14 @@ IDismOSServiceManager : IDispatch
     virtual HRESULT STDMETHODCALLTYPE SetSystemPath(
         _In_ BSTR SystemPath) = 0;
     virtual HRESULT STDMETHODCALLTYPE MountRegistry(
-        _Out_ struct IDismRegistry** DismRegistry) = 0;
+        _Out_ IDismRegistry** DismRegistry) = 0;
 };
 
 MIDL_INTERFACE("c8292388-8d1d-4c34-9a41-8763fcd304f7")
 IDismServicingProvider : IDismObject
 {
     virtual HRESULT STDMETHODCALLTYPE Initialize(
-        _In_ struct IDismOSServiceManager* OSServiceManager,
+        _In_ IDismOSServiceManager* OSServiceManager,
         _In_ BSTR ScratchDirectory) = 0;
     virtual HRESULT STDMETHODCALLTYPE Finalize() = 0;
     virtual HRESULT STDMETHODCALLTYPE ValidateServiceability() = 0;
@@ -820,7 +820,7 @@ IDismItemManager : IDismServicingProvider
         _In_ BSTR ItemLocation,
         _Out_ IUnknown** Item) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetItems(
-        _Out_ struct IDismItemCollection** Item) = 0;
+        _Out_ IDismItemCollection** Item) = 0;
 };
 
 MIDL_INTERFACE("dadad7bb-2b1d-4edb-9014-b1912e1a2e3d")
@@ -846,7 +846,7 @@ IDismTokenCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismToken** ppToken) = 0;
+        _Out_ IDismToken** ppToken) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -867,7 +867,7 @@ IDismCommandCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismCommand** ppToken) = 0;
+        _Out_ IDismCommand** ppToken) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -898,7 +898,7 @@ IDismHelpItemCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismHelpItem** ppToken) = 0;
+        _Out_ IDismHelpItem** ppToken) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -907,23 +907,23 @@ MIDL_INTERFACE("7234ec82-c68b-4c4e-ba1d-d333f5b87b37")
 IDismSupportCommands : IUnknown
 {
     virtual HRESULT STDMETHODCALLTYPE ExecuteCmdLine(
-        _In_ struct IDismTokenCollection* Tokens) = 0;
+        _In_ IDismTokenCollection* Tokens) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetCommandCollection(
-        _Out_ struct IDismCommandCollection** ppCommandCollection) = 0;
+        _Out_ IDismCommandCollection** ppCommandCollection) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetHelpItemCollection(
-        _Out_ struct IDismHelpItemCollection** ppHelpItemCollection) = 0;
+        _Out_ IDismHelpItemCollection** ppHelpItemCollection) = 0;
 };
 
 MIDL_INTERFACE("fe104c14-65e6-43b3-aa56-f07b5e57d81f")
 IDismProviderStorePrivate : IDismObject
 {
     virtual HRESULT STDMETHODCALLTYPE Initialize(
-        _In_ struct IDismProviderStorePrivate* pStore) = 0;
+        _In_ IDismProviderStorePrivate* pStore) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetProviderLocation(
         _In_ BSTR providerName,
         _Out_ LPBSTR ProviderLocation) = 0;
     virtual HRESULT STDMETHODCALLTYPE RegisterProvider(
-        _In_ struct IDismProvider* Provider) = 0;
+        _In_ IDismProvider* Provider) = 0;
 };
 
 MIDL_INTERFACE("c9e39092-53df-42b6-89b4-fba12662ead1")
@@ -971,7 +971,7 @@ IDismCapabilityCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismCapability** ppCapability) = 0;
+        _Out_ IDismCapability** ppCapability) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -1053,11 +1053,11 @@ IUnattendManager : IDispatch
 {
     virtual HRESULT STDMETHODCALLTYPE OpenUnattend(
         _In_ BSTR UnattendPath,
-        _Out_ struct IUnattend** ppUnattend) = 0;
+        _Out_ IUnattend** ppUnattend) = 0;
     virtual HRESULT STDMETHODCALLTYPE Validate(
-        _In_ struct IUnattend* pUnattend) = 0;
+        _In_ IUnattend* pUnattend) = 0;
     virtual HRESULT STDMETHODCALLTYPE Apply(
-        _In_ struct IUnattend* pUnattend,
+        _In_ IUnattend* pUnattend,
         _In_ ULONG Flags) = 0;
 };
 
@@ -1072,7 +1072,7 @@ MIDL_INTERFACE("092187e4-09b8-46a3-87d5-1c9bc6ed8b5d")
 IDismCompatManager : IDispatch
 {
     virtual HRESULT STDMETHODCALLTYPE CompatExecuteCmdLine(
-        _In_ struct IDismTokenCollection* Tokens,
+        _In_ IDismTokenCollection* Tokens,
         _In_ BSTR bszPkgMgrExe,
         _In_ BSTR bszImagePath,
         _In_ BSTR bszWindir,
@@ -1144,13 +1144,13 @@ ITransmogrify : IDispatch
     virtual HRESULT STDMETHODCALLTYPE GetCurrentEdition(
         _Out_ LPBSTR pEditionId) = 0;
     virtual HRESULT STDMETHODCALLTYPE CreateEditionCollection(
-        _Out_ struct ITransmogrifyEditionCollection** ppEditionCollection) = 0;
+        _Out_ ITransmogrifyEditionCollection** ppEditionCollection) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetTargetEditions(
-        _Out_ struct ITransmogrifyEditionCollection** ppTargetEditions) = 0;
+        _Out_ ITransmogrifyEditionCollection** ppTargetEditions) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetStagedEditions(
-        _Out_ struct ITransmogrifyEditionCollection** ppStagedEditions) = 0;
+        _Out_ ITransmogrifyEditionCollection** ppStagedEditions) = 0;
     virtual HRESULT STDMETHODCALLTYPE RemoveStagedEditions(
-        _In_ struct ITransmogrifyEditionCollection* pStagedEditions) = 0;
+        _In_ ITransmogrifyEditionCollection* pStagedEditions) = 0;
 };
 
 MIDL_INTERFACE("c6abc167-33b8-4a00-be58-12ec5b013598")
@@ -1184,10 +1184,10 @@ ITransmogrify5 : ITransmogrify4
         _In_ BSTR EditionId,
         _In_ BSTR Channel) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetTargetCompositionEditions(
-        _Out_ struct ITransmogrifyEditionCollection** ppTargetCompositionEditions) = 0;
+        _Out_ ITransmogrifyEditionCollection** ppTargetCompositionEditions) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetTargetVirtualEditions(
         _In_ BSTR TargetCompositionEdition,
-        _Out_ struct ITransmogrifyEditionCollection** ppTargetVirtualEditions) = 0;
+        _Out_ ITransmogrifyEditionCollection** ppTargetVirtualEditions) = 0;
 };
 
 MIDL_INTERFACE("57ab0039-5829-4ebf-b093-0b3a80867c24")
@@ -1228,7 +1228,7 @@ IDismAppxPackageInfoCollection : IDispatch
         _Out_ LPLONG Count) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismAppxPackageInfo** appxPackageInfo) = 0;
+        _Out_ IDismAppxPackageInfo** appxPackageInfo) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** newEnum) = 0;
 };
@@ -1242,12 +1242,12 @@ IDismAppxManager : IDispatch
         _In_ VARIANT_BOOL skipLicenseCheck) = 0;
     virtual HRESULT STDMETHODCALLTYPE AddAllUserAppxPackage(
         _In_ BSTR mainPackagePath,
-        _In_ struct IDismStringCollection* dependencyPackagePaths,
+        _In_ IDismStringCollection* dependencyPackagePaths,
         _In_ BSTR customDataPath,
         _In_ BSTR licensePath,
         _In_ VARIANT_BOOL skipLicenseCheck) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetAllUserAppx(
-        _Out_ struct IDismAppxPackageInfoCollection** packageCollection) = 0;
+        _Out_ IDismAppxPackageInfoCollection** packageCollection) = 0;
     virtual HRESULT STDMETHODCALLTYPE RemoveAllUserAppx(
         _In_ BSTR mainPackageMoniker) = 0;
 };
@@ -1265,10 +1265,10 @@ IDismAppxManager3 : IDismAppxManager2
 {
     virtual HRESULT STDMETHODCALLTYPE AddAllUserAppxPackageWithOptionalPackages(
         _In_ BSTR mainPackagePath,
-        _In_ struct IDismStringCollection* dependencyPackagePaths,
-        _In_ struct IDismStringCollection* optionalPackagePaths,
+        _In_ IDismStringCollection* dependencyPackagePaths,
+        _In_ IDismStringCollection* optionalPackagePaths,
         _In_ BSTR customDataPath,
-        _In_ struct IDismStringCollection* licensePaths,
+        _In_ IDismStringCollection* licensePaths,
         _In_ VARIANT_BOOL skipLicenseCheck) = 0;
 };
 
@@ -1283,10 +1283,10 @@ IDismAppxManager5 : IDismAppxManager4
 {
     virtual HRESULT STDMETHODCALLTYPE AddAllUserAppxPackageWithOptionalPackagesAndRegion(
         _In_ BSTR mainPackagePath,
-        _In_ struct IDismStringCollection* dependencyPackagePaths,
-        _In_ struct IDismStringCollection* optionalPackagePaths,
+        _In_ IDismStringCollection* dependencyPackagePaths,
+        _In_ IDismStringCollection* optionalPackagePaths,
         _In_ BSTR customDataPath,
-        _In_ struct IDismStringCollection* licensePaths,
+        _In_ IDismStringCollection* licensePaths,
         _In_ VARIANT_BOOL skipLicenseCheck,
         _In_ BSTR region) = 0;
 };
@@ -1299,7 +1299,7 @@ IDismAppxManager6 : IDismAppxManager5
     virtual HRESULT STDMETHODCALLTYPE RemoveAppxUninstallBlocklistEntry(
         _In_ BSTR packageFamilyName) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetNonRemovableAppPolicy(
-        _Out_ struct IDismStringCollection** packageFamilyNames) = 0;
+        _Out_ IDismStringCollection** packageFamilyNames) = 0;
 };
 
 MIDL_INTERFACE("5367d43f-aa59-4a81-9068-36c7a360fe72")
@@ -1346,7 +1346,7 @@ MIDL_INTERFACE("0ab3ac34-c644-4903-aa5f-5b5d8f15d969")
 IDismGenericManager : IDispatch
 {
     virtual HRESULT STDMETHODCALLTYPE Run(
-        _In_ struct IDismTokenCollection* Tokens) = 0;
+        _In_ IDismTokenCollection* Tokens) = 0;
 };
 
 MIDL_INTERFACE("db46267b-2fea-4bb5-9f14-e4e582e4777f")
@@ -1368,7 +1368,7 @@ MIDL_INTERFACE("8e65fbac-20ad-4075-bd7b-377112ff1f69")
 IDismSysprepManager : IDispatch
 {
     virtual HRESULT STDMETHODCALLTYPE Run(
-        _In_ struct IDismTokenCollection* Tokens) = 0;
+        _In_ IDismTokenCollection* Tokens) = 0;
 };
 
 MIDL_INTERFACE("53219e4f-44c6-4ed4-83f9-065fdee95795")
@@ -1387,7 +1387,7 @@ MIDL_INTERFACE("aa668c08-675c-49cb-a127-2cd57a173c04")
 IDismSetupPlatformManager : IDispatch
 {
     virtual HRESULT STDMETHODCALLTYPE Run(
-        _In_ struct IDismTokenCollection* Tokens) = 0;
+        _In_ IDismTokenCollection* Tokens) = 0;
 };
 
 MIDL_INTERFACE("924d876e-17f7-4a5e-ac33-918c2bea0fd5")
@@ -1424,7 +1424,7 @@ IDismProvPackageElement : IDispatch
     virtual HRESULT STDMETHODCALLTYPE get_Type(
         _Out_ DISM_ELEMENT_TYPE * pVal) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetDismPropertyCollection(
-        _Out_ struct IDismPropertyCollection** PropertyCollection) = 0;
+        _Out_ IDismPropertyCollection** PropertyCollection) = 0;
 };
 
 MIDL_INTERFACE("3ca3a1b2-ff8c-487a-a0bc-95327ccabd7b")
@@ -1434,7 +1434,7 @@ IDismProvPackageElementCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismProvPackageElement** ppPackage) = 0;
+        _Out_ IDismProvPackageElement** ppPackage) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -1444,7 +1444,7 @@ IDismProvisioningSupport : IDispatch
 {
     virtual HRESULT STDMETHODCALLTYPE GetElementCollection(
         _In_ BSTR bstrPackagePath,
-        _Out_ struct IDismProvPackageElementCollection** ppElementCollection) = 0;
+        _Out_ IDismProvPackageElementCollection** ppElementCollection) = 0;
     virtual HRESULT STDMETHODCALLTYPE ApplyProvPackage(
         _In_ BSTR bstrPackagePath) = 0;
 };
@@ -1508,11 +1508,11 @@ IDismPackage : IDispatch
     virtual HRESULT STDMETHODCALLTYPE Stage() = 0;
     virtual HRESULT STDMETHODCALLTYPE OpenFeature(
         _In_ BSTR UpdateName,
-        _Out_ struct IDismPackageFeature** PackageFeature) = 0;
+        _Out_ IDismPackageFeature** PackageFeature) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetPackageFeatureCollection(
-        _Out_ struct IDismPackageFeatureCollection** ppPackageFeatures) = 0;
+        _Out_ IDismPackageFeatureCollection** ppPackageFeatures) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetDismPropertyCollection(
-        _Out_ struct IDismPropertyCollection** PropertyCollection) = 0;
+        _Out_ IDismPropertyCollection** PropertyCollection) = 0;
 };
 
 MIDL_INTERFACE("5f81a121-c3c5-4e94-b7ae-22b532f9f3a8")
@@ -1553,7 +1553,7 @@ IDismPackageCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismPackage** ppPackage) = 0;
+        _Out_ IDismPackage** ppPackage) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -1580,13 +1580,13 @@ IDismPackageFeature : IDispatch
     virtual HRESULT STDMETHODCALLTYPE get_SetMembership(
         _Out_ LPBSTR pVal) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_RawParentPackage(
-        _Out_ struct IDismPackage** pVal) = 0;
+        _Out_ IDismPackage** pVal) = 0;
     virtual HRESULT STDMETHODCALLTYPE Enable() = 0;
     virtual HRESULT STDMETHODCALLTYPE Disable() = 0;
     virtual HRESULT STDMETHODCALLTYPE GetParentFeatureCollection(
-        _Out_ struct IDismPackageFeatureCollection** pVal) = 0;
+        _Out_ IDismPackageFeatureCollection** pVal) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetDismPropertyCollection(
-        _Out_ struct IDismPropertyCollection** PropertyCollection) = 0;
+        _Out_ IDismPropertyCollection** PropertyCollection) = 0;
 };
 
 MIDL_INTERFACE("63e0af82-28e4-4145-ae9a-aadd715c1251")
@@ -1596,7 +1596,7 @@ IDismPackageFeatureCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismPackageFeature** ppDriver) = 0;
+        _Out_ IDismPackageFeature** ppDriver) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -1620,22 +1620,22 @@ IDismPackageManager : IDispatch
         _Out_ VARIANT_BOOL* pVal) = 0;
     virtual HRESULT STDMETHODCALLTYPE OpenPackageByPath(
         _In_ BSTR PackageLocation,
-        _Out_ struct IDismPackage** Package) = 0;
+        _Out_ IDismPackage** Package) = 0;
     virtual HRESULT STDMETHODCALLTYPE OpenPackageByName(
         _In_ BSTR PackageName,
-        _Out_ struct IDismPackage** Package) = 0;
+        _Out_ IDismPackage** Package) = 0;
     virtual HRESULT STDMETHODCALLTYPE OpenFoundationPackage(
-        _Out_ struct IDismPackage** Package) = 0;
+        _Out_ IDismPackage** Package) = 0;
     virtual HRESULT STDMETHODCALLTYPE OpenMsuPackage(
         _In_ BSTR PackageLocation,
-        _Out_ struct IDismMsuPackage** Package) = 0;
+        _Out_ IDismMsuPackage** Package) = 0;
     virtual HRESULT STDMETHODCALLTYPE OpenPublicFeature(
         _In_ BSTR FeatureName,
-        _Out_ struct IDismPackageFeature** Feature) = 0;
+        _Out_ IDismPackageFeature** Feature) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetPackageCollection(
-        _Out_ struct IDismPackageCollection** ppPackages) = 0;
+        _Out_ IDismPackageCollection** ppPackages) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetPublicFeatureCollection(
-        _Out_ struct IDismPackageFeatureCollection** ppPackageFeatures) = 0;
+        _Out_ IDismPackageFeatureCollection** ppPackageFeatures) = 0;
     virtual HRESULT STDMETHODCALLTYPE ProcessChanges() = 0;
     virtual HRESULT STDMETHODCALLTYPE ProcessChangesWithOptions(
         _In_ unsigned int Options) = 0;
@@ -1674,7 +1674,7 @@ MIDL_INTERFACE("e40dd35a-89e1-4619-ad21-ef97d29b5d00")
 IDismPackageManager3 : IDismPackageManager2
 {
     virtual HRESULT STDMETHODCALLTYPE AnalyzeComponentStore(
-        _Out_ struct IDismComponentStoreReport** ppReport) = 0;
+        _Out_ IDismComponentStoreReport** ppReport) = 0;
 };
 
 MIDL_INTERFACE("4dfd752a-1e5e-4c70-94ff-9c91b5f61335")
@@ -1682,7 +1682,7 @@ IDismPackageManager4 : IDismPackageManager3
 {
     virtual HRESULT STDMETHODCALLTYPE GetCapabilityCollection(
         _In_ DISM_ON_DEMAND_SOURCE_FILTER SourceFilter,
-        _Out_ struct IDismCapabilityCollection** ppCapabilities) = 0;
+        _Out_ IDismCapabilityCollection** ppCapabilities) = 0;
     virtual HRESULT STDMETHODCALLTYPE StartComponentCleanupEx(
         _In_ VARIANT_BOOL ResetBase,
         _In_ DISM_RESETBASE_OPTION ResetBaseOption) = 0;
@@ -1704,18 +1704,18 @@ IDismDriverManager : IDispatch
 {
     virtual HRESULT STDMETHODCALLTYPE GetDriverPackageCollection(
         _In_ DRIVER_COLL_OUTPUT CollType,
-        _Out_ struct IDismDriverPackageCollection** DriverPackages) = 0;
+        _Out_ IDismDriverPackageCollection** DriverPackages) = 0;
     virtual HRESULT STDMETHODCALLTYPE OpenPackageByFile(
         _In_ BSTR PackageInf,
-        _Out_ struct IDismDriverPackage** DriverPackage) = 0;
+        _Out_ IDismDriverPackage** DriverPackage) = 0;
     virtual HRESULT STDMETHODCALLTYPE OpenPackageByFolder(
         _In_ BSTR PackageFolder,
         _In_ VARIANT_BOOL SearchSubFolders,
-        _Out_ struct IDismErrorCollection** Errors,
-        _Out_ struct IDismDriverPackageCollection** DriverPackages) = 0;
+        _Out_ IDismErrorCollection** Errors,
+        _Out_ IDismDriverPackageCollection** DriverPackages) = 0;
     virtual HRESULT STDMETHODCALLTYPE OpenPackageInStore(
         _In_ BSTR PackageName,
-        _Out_ struct IDismDriverPackage** DriverPackage) = 0;
+        _Out_ IDismDriverPackage** DriverPackage) = 0;
 };
 
 MIDL_INTERFACE("45554af5-6058-4913-8e5f-c9b79d5995cf")
@@ -1725,7 +1725,7 @@ IDismDriverPackageCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismDriverPackage** Driver) = 0;
+        _Out_ IDismDriverPackage** Driver) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -1735,7 +1735,7 @@ IDismDriverPackage : IDispatch
 {
     virtual HRESULT STDMETHODCALLTYPE GetDriverCollection(
         _In_ LONG Architecture,
-        _Out_ struct IDismDriverCollection** Drivers) = 0;
+        _Out_ IDismDriverCollection** Drivers) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_LocaleName(
         _Out_ LPBSTR LocaleName) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_InfProviderName(
@@ -1775,7 +1775,7 @@ MIDL_INTERFACE("3b6bbfa2-f817-423b-a83c-103ad54615d4")
 IDismDriver : IDispatch
 {
     virtual HRESULT STDMETHODCALLTYPE get_ParentPackage(
-        _Out_ struct IDismDriverPackage** Package) = 0;
+        _Out_ IDismDriverPackage** Package) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Manufacturer(
         _Out_ LPBSTR Manufacturer) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Description(
@@ -1787,9 +1787,9 @@ IDismDriver : IDispatch
     virtual HRESULT STDMETHODCALLTYPE get_ServiceName(
         _Out_ LPBSTR HardwareId) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_CompatibleIds(
-        _Out_ struct IDismDeviceIdCollection** DeviceIds) = 0;
+        _Out_ IDismDeviceIdCollection** DeviceIds) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_ExcludeIds(
-        _Out_ struct IDismDeviceIdCollection** DeviceIds) = 0;
+        _Out_ IDismDeviceIdCollection** DeviceIds) = 0;
 };
 
 MIDL_INTERFACE("4e1cb72f-c47d-42ee-8cca-4ceb35b3fe17")
@@ -1799,7 +1799,7 @@ IDismDriverCollection : IDispatch
         _Out_ LPLONG pnCount) = 0;
     virtual HRESULT STDMETHODCALLTYPE get_Item(
         _In_ LONG n,
-        _Out_ struct IDismDriver** Driver) = 0;
+        _Out_ IDismDriver** Driver) = 0;
     virtual HRESULT STDMETHODCALLTYPE get__NewEnum(
         _Out_ IUnknown** ppEnum) = 0;
 };
@@ -1816,7 +1816,7 @@ IDismDriverPackage3 : IDismDriverPackage2
 {
     virtual HRESULT STDMETHODCALLTYPE InstallEx2(
         _In_ DRIVER_INSTALL_FLAGS Flags,
-        _Inout_ struct IDismDriverPackage** StorePackage) = 0;
+        _Inout_ IDismDriverPackage** StorePackage) = 0;
     virtual HRESULT STDMETHODCALLTYPE SetProperty(
         _In_ struct DEVPROPKEY* PropertyKey,
         _In_ ULONG PropertyType,
