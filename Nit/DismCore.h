@@ -1,11 +1,11 @@
 ﻿/*
-* PROJECT:   Nit - A Windows Image Tweaker based on DismCore
-* FILE:    DismCore.h
-* PURPOSE:   Definition for the DismCore interfaces(10.0.18362)
-*
-* LICENSE:   The MIT License
-*
-* DEVELOPER: Mouri_Naruto(Mouri_Naruto AT Outlook.com)
+ * PROJECT:   Nit - A Windows Image Tweaker based on DismCore
+ * FILE:      DismCore.h
+ * PURPOSE:   Definition for the DismCore interfaces(10.0.18362)
+ *
+ * LICENSE:   The MIT License
+ *
+ * DEVELOPER: Mouri_Naruto(Mouri_Naruto AT Outlook.com)
  */
 
 #ifndef DISM_CORE_H
