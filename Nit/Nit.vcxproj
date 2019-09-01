@@ -98,9 +98,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Nit.cpp" />
+    <ClCompile Include="NitCore.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DismCore.h" />
+    <ClInclude Include="NitCore.h" />
     <ClInclude Include="NitVersion.h" />
   </ItemGroup>
   <ItemGroup>

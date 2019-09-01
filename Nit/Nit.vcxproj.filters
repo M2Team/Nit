@@ -2,11 +2,17 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Nit.cpp" />
+    <ClCompile Include="NitCore.cpp">
+      <Filter>NitCore</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DismCore.h" />
     <ClInclude Include="NitVersion.h">
       <Filter>NitVersion</Filter>
+    </ClInclude>
+    <ClInclude Include="NitCore.h">
+      <Filter>NitCore</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -15,6 +21,9 @@
     </Filter>
     <Filter Include="NitManifest">
       <UniqueIdentifier>{49fb9111-6caa-46c3-8bdc-8d8a6929debd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NitCore">
+      <UniqueIdentifier>{6187d72a-5c8f-49ff-b089-b9062e0bfb10}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
