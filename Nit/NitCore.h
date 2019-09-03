@@ -28,8 +28,8 @@ namespace Nit
      *         ERROR_SUCCESS.
      * @remark The way to get a file handle for this operation:
      *         HANDLE FileHandle = CreateFileW(
-     *             FileName.c_str(),
-     *             FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES,
+     *             lpFileName,
+     *             FILE_READ_DATA | FILE_READ_ATTRIBUTES,
      *             FILE_SHARE_READ | FILE_SHARE_DELETE,
      *             nullptr,
      *             OPEN_EXISTING,
@@ -65,8 +65,8 @@ namespace Nit
      *         ERROR_SUCCESS.
      * @remark The way to get a file handle for this operation:
      *         HANDLE FileHandle = CreateFileW(
-     *             FileName.c_str(),
-     *             FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES,
+     *             lpFileName,
+     *             FILE_READ_DATA | FILE_READ_ATTRIBUTES,
      *             FILE_SHARE_READ | FILE_SHARE_DELETE,
      *             nullptr,
      *             OPEN_EXISTING,
@@ -103,8 +103,8 @@ namespace Nit
      *         ERROR_SUCCESS.
      * @remark The way to get a file handle for this operation:
      *         HANDLE FileHandle = CreateFileW(
-     *             FileName.c_str(),
-     *             FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES,
+     *             lpFileName,
+     *             FILE_READ_DATA | FILE_READ_ATTRIBUTES,
      *             FILE_SHARE_READ | FILE_SHARE_DELETE,
      *             nullptr,
      *             OPEN_EXISTING,
@@ -115,14 +115,59 @@ namespace Nit
         _Out_ PDWORD CompressionAlgorithm,
         _In_ HANDLE FileHandle);
 
-//
-//    HRESULT CompressFileWithNTFSCompression(HANDLE FileHandle)
-//    {
-//        //DeviceIoControl(FileHandle,FSCTL_SET_COMPRESSION,)
-//    }
-//
-//    HRESULT DecompressFileWithNTFSCompression();
-//
+    /**
+     * Sets the NTFS file compression attribute.
+     *
+     * @param FileHandle A handle to the file on which the operation is to be
+     *        performed.
+     * @param CompressionAlgorithm Specifies the compression algorithm that is
+     *        used to compress this file. Currently defined algorithms are:
+     *        COMPRESSION_FORMAT_NONE: Uncompress the file or directory.
+     *        COMPRESSION_FORMAT_DEFAULT: Compress the file or directory, using
+     *            the default compression format.
+     *        COMPRESSION_FORMAT_LZNT1: Compress the file or directory, using
+     *            the LZNT1 compression format.
+     * @return Standard Win32 Error. If the function succeeds, the return value is
+     *         ERROR_SUCCESS.
+     * @remark The way to get a file handle for this operation:
+     *         HANDLE FileHandle = CreateFileW(
+     *             lpFileName,
+     *             FILE_READ_DATA | FILE_WRITE_DATA,
+     *             FILE_SHARE_READ | FILE_SHARE_WRITE,
+     *             nullptr,
+     *             OPEN_EXISTING,
+     *             FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_SEQUENTIAL_SCAN,
+     *             nullptr);
+     */
+    DWORD NtfsSetFileCompressionAttribute(
+        _In_ HANDLE FileHandle,
+        _In_ USHORT CompressionAlgorithm);
+
+    /**
+     * Gets the NTFS file compression attribute.
+     *
+     * @param CompressionAlgorithm A pointer to the compression algorithm that
+     *        is used to compress this file. Currently defined algorithms are:
+     *        COMPRESSION_FORMAT_NONE: The file or directory is not compressed.
+     *        COMPRESSION_FORMAT_LZNT1: The file or directory is compressed,
+     *            using the LZNT1 compression format.
+     * @param FileHandle A handle to the file on which the operation is to be
+     *        performed.
+     * @return Standard Win32 Error. If the function succeeds, the return value is
+     *         ERROR_SUCCESS.
+     * @remark The way to get a file handle for this operation:
+     *         HANDLE FileHandle = CreateFileW(
+     *             lpFileName,
+     *             FILE_READ_DATA | FILE_WRITE_DATA,
+     *             FILE_SHARE_READ | FILE_SHARE_WRITE,
+     *             nullptr,
+     *             OPEN_EXISTING,
+     *             FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_SEQUENTIAL_SCAN,
+     *             nullptr);
+     */
+    DWORD NtfsGetFileCompressionAttribute(
+        _Out_ PUSHORT CompressionAlgorithm,
+        _In_ HANDLE FileHandle);
 }
 
 #endif

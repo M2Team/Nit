@@ -120,4 +120,67 @@ namespace Nit
             return ::GetLastError();
         }
     }
+
+    /**
+     * @remark You can read the definition for this function in "NitCore.h".
+     */
+    DWORD NtfsSetFileCompressionAttribute(
+        _In_ HANDLE FileHandle,
+        _In_ USHORT CompressionAlgorithm)
+    {
+        switch (CompressionAlgorithm)
+        {
+        case COMPRESSION_FORMAT_NONE:
+        case COMPRESSION_FORMAT_DEFAULT:
+        case COMPRESSION_FORMAT_LZNT1:
+            break;
+        default:
+            return ERROR_INVALID_PARAMETER;
+        }
+
+        if (::DeviceIoControl(
+            FileHandle,
+            FSCTL_SET_COMPRESSION,
+            &CompressionAlgorithm,
+            sizeof(CompressionAlgorithm),
+            nullptr,
+            0,
+            nullptr,
+            nullptr))
+        {
+            return ERROR_SUCCESS;
+        }
+        else
+        {
+            return ::GetLastError();
+        }
+    }
+
+    /**
+     * @remark You can read the definition for this function in "NitCore.h".
+     */
+    DWORD NtfsGetFileCompressionAttribute(
+        _Out_ PUSHORT CompressionAlgorithm,
+        _In_ HANDLE FileHandle)
+    {
+        if (!CompressionAlgorithm)
+            return ERROR_INVALID_PARAMETER;
+
+        if (::DeviceIoControl(
+            FileHandle,
+            FSCTL_GET_COMPRESSION,
+            nullptr,
+            0,
+            CompressionAlgorithm,
+            sizeof(*CompressionAlgorithm),
+            nullptr,
+            nullptr))
+        {
+            return ERROR_SUCCESS;
+        }
+        else
+        {
+            return ::GetLastError();
+        }
+    }
 }
