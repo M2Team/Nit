@@ -309,8 +309,6 @@ FORCEINLINE bool WINAPI M2IsDots(
     return Name[0] == L'.' && (!Name[1] || (Name[1] == L'.' && !Name[2]));
 }
 
-uint64_t TotalSize = 0;
-
 #include <algorithm>
 
 DWORD GetFileCompressedSize(
@@ -456,26 +454,166 @@ void EnumerateDirectory(
 
 #include <set>
 
+#include <map>
+
 #include "NitCore.h"
+
+namespace NSudo
+{
+    BOOL SetPrivilege(
+        HANDLE hToken,          // access token handle
+        LPCTSTR lpszPrivilege,  // name of privilege to enable/disable
+        BOOL bEnablePrivilege   // to enable or disable privilege
+    )
+    {
+        ::TOKEN_PRIVILEGES tp;
+        ::LUID luid;
+
+        if (!::LookupPrivilegeValueW(
+            NULL,            // lookup privilege on local system
+            lpszPrivilege,   // privilege to lookup 
+            &luid))        // receives LUID of privilege
+        {
+            printf("LookupPrivilegeValue error: %u\n", GetLastError());
+            return FALSE;
+        }
+
+        tp.PrivilegeCount = 1;
+        tp.Privileges[0].Luid = luid;
+        if (bEnablePrivilege)
+            tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+        else
+            tp.Privileges[0].Attributes = 0;
+
+        // Enable the privilege or disable all privileges.
+
+        if (!::AdjustTokenPrivileges(
+            hToken,
+            FALSE,
+            &tp,
+            sizeof(TOKEN_PRIVILEGES),
+            (PTOKEN_PRIVILEGES)NULL,
+            (PDWORD)NULL))
+        {
+            printf("AdjustTokenPrivileges error: %u\n", GetLastError());
+            return FALSE;
+        }
+
+        if (GetLastError() == ERROR_NOT_ALL_ASSIGNED)
+
+        {
+            printf("The token does not have the specified privilege. \n");
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
+    //BOOL AdjustTokenPrivileges(
+    //    _In_ HANDLE TokenHandle,
+    //    _In_ std::map<std::wstring, DWORD> const& TokenPrivileges)
+    //{
+
+
+    //    for (auto& TokenPrivilege : TokenPrivileges)
+    //    {
+    //        if (true)
+    //        {
+
+    //        }
+    //    }
+
+
+    //    //::AdjustTokenPrivileges
+    //}
+
+
+    //BOOL ExecuteCodeWithImpersonatedContext(
+    //    HANDLE hToken,
+    //    std::function<void()> const& StartCodeCallBack)
+    //{
+    //    if (::ImpersonateLoggedOnUser(hToken))
+    //    {
+    //        StartCodeCallBack();
+
+    //        ::RevertToSelf();
+    //    }
+    //}
+
+    //
+
+
+    //class ImpersonatedContext
+    //{
+    //private:
+
+
+
+    //public:
+    //    ImpersonatedContext();
+
+    //    ~ImpersonatedContext()
+    //    {
+    //        
+    //    }
+
+    //
+
+    //};
+
+    //ImpersonatedContext::ImpersonatedContext()
+    //{
+    //}
+
+    //ImpersonatedContext::~ImpersonatedContext()
+    //{
+    //}
+}
 
 int main()
 {
-    std::setlocale(LC_ALL, "chs");
+    HANDLE hCurrentProcessToken = INVALID_HANDLE_VALUE;
 
-    //M2BrowseDirectory(L"C:\\Windows\\WinSxS\\Manifests\\");
-
-    /*ULONGLONG CheckPoint1 = GetTickCount();
-
-    for (size_t i = 0; i < 10; ++i)
+    if (::OpenProcessToken(
+        ::GetCurrentProcess(),
+        MAXIMUM_ALLOWED,
+        &hCurrentProcessToken))
     {
-        M2BrowseDirectory(L"C:\\");
+        if (!NSudo::SetPrivilege(hCurrentProcessToken, SE_BACKUP_NAME, TRUE))
+        {
+            DWORD Error = ::GetLastError();
+            wprintf(
+                L"%s(%s) failed with error code %d\n",
+                L"NSudo::SetPrivilege",
+                SE_BACKUP_NAME,
+                Error);
+            return Error;
+        }
+
+        if (!NSudo::SetPrivilege(hCurrentProcessToken, SE_RESTORE_NAME, TRUE))
+        {
+            DWORD Error = ::GetLastError();
+            wprintf(
+                L"%s(%s) failed with error code %d\n",
+                L"NSudo::SetPrivilege",
+                SE_RESTORE_NAME,
+                Error);
+            return Error;
+        }
+
+        ::CloseHandle(hCurrentProcessToken);
+    }
+    else
+    {
+        DWORD Error = ::GetLastError();
+        wprintf(
+            L"%s failed with error code %d\n",
+            L"OpenProcessToken",
+            Error);
+        return Error;
     }
 
-    ULONGLONG CheckPoint2 = GetTickCount();
-
-    wprintf(L"Time: %lld\n", CheckPoint2 - CheckPoint1);*/
-
-    //M2BrowseDirectory(L"C:\\");
+    std::setlocale(LC_ALL, "chs");
 
     const DWORD CompressionAlgorithm = FILE_PROVIDER_COMPRESSION_XPRESS4K;
 
@@ -486,14 +624,14 @@ int main()
     ExclusionList.insert(L"\\BootMgr");
 
     ExclusionList.insert(L"\\aow.wim");
-    ExclusionList.insert(L"\\boot\\bcd");
-    ExclusionList.insert(L"\\boot\\bcd.log");
-    ExclusionList.insert(L"\\boot\\bootstat.dat");
-    ExclusionList.insert(L"\\config\\drivers");
-    ExclusionList.insert(L"\\config\\drivers.log");
-    ExclusionList.insert(L"\\config\\system");
-    ExclusionList.insert(L"\\config\\system.log");
-    ExclusionList.insert(L"\\windows\\bootstat.dat");
+    ExclusionList.insert(L"\\Boot\\BCD");
+    ExclusionList.insert(L"\\Boot\\BCD.LOG");
+    ExclusionList.insert(L"\\Boot\\bootstat.dat");
+    ExclusionList.insert(L"\\config\\DRIVERS");
+    ExclusionList.insert(L"\\config\\DRIVERS.LOG");
+    ExclusionList.insert(L"\\config\\SYSTEM");
+    ExclusionList.insert(L"\\config\\SYSTEM.LOG");
+    ExclusionList.insert(L"\\Windows\\bootstat.dat");
     ExclusionList.insert(L"\\winload.efi");
     ExclusionList.insert(L"\\winload.efi.mui");
     ExclusionList.insert(L"\\winload.exe");
@@ -503,9 +641,9 @@ int main()
     ExclusionList.insert(L"\\winresume.exe");
     ExclusionList.insert(L"\\winresume.exe.mui");
 
-    ExclusionList.insert(L"\\Backup\\");
-    ExclusionList.insert(L"\\ManifestCache\\");
-    ExclusionList.insert(L"\\Manifests\\");
+    ExclusionList.insert(L"\\WinSxS\\Backup\\");
+    ExclusionList.insert(L"\\WinSxS\\ManifestCache\\");
+    ExclusionList.insert(L"\\WinSxS\\Manifests\\");
 
     EnumerateDirectory(
         L"C:\\",
@@ -531,7 +669,7 @@ int main()
                 return LoopType::Normal;
 
             HANDLE FileHandle = CreateFileW(
-                FilePath.c_str(),
+                (std::wstring(L"\\\\?\\") + FilePath).c_str(),
                 FILE_READ_DATA | FILE_READ_ATTRIBUTES,
                 FILE_SHARE_READ | FILE_SHARE_DELETE,
                 nullptr,
@@ -626,9 +764,6 @@ int main()
 
             return LoopType::Normal;
         });
-
-    //wprintf(L"%llu\n", TotalSize);
-    //TotalSize = 0;
 
     wprintf(L"\n\nFinished.\n");
 
