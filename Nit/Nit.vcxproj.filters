@@ -43,6 +43,9 @@
     <Filter Include="NSudoAPI">
       <UniqueIdentifier>{65035c84-4626-4399-98e2-79a8729dd515}</UniqueIdentifier>
     </Filter>
+    <Filter Include="VC-LTL">
+      <UniqueIdentifier>{09665289-8c80-4bd2-a4bf-7ba0362fe840}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NitVersion.rc">
@@ -56,5 +59,15 @@
     <Manifest Include="NitManifest.manifest">
       <Filter>NitManifest</Filter>
     </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="VC-LTL.xml">
+      <Filter>VC-LTL</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="VC-LTL.props">
+      <Filter>VC-LTL</Filter>
+    </None>
   </ItemGroup>
 </Project>

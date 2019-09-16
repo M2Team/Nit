@@ -58,6 +58,9 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)'=='Release'">
+    <Import Project="VC-LTL.props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <OutDir>$(SolutionDir)Output\$(Configuration)\$(Platform)\</OutDir>
@@ -115,6 +118,12 @@
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="NitManifest.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="VC-LTL.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="VC-LTL.props" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
