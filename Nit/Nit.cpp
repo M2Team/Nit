@@ -458,117 +458,7 @@ void EnumerateDirectory(
 
 #include "NitCore.h"
 
-namespace NSudo
-{
-    BOOL SetPrivilege(
-        HANDLE hToken,          // access token handle
-        LPCTSTR lpszPrivilege,  // name of privilege to enable/disable
-        BOOL bEnablePrivilege   // to enable or disable privilege
-    )
-    {
-        ::TOKEN_PRIVILEGES tp;
-        ::LUID luid;
-
-        if (!::LookupPrivilegeValueW(
-            NULL,            // lookup privilege on local system
-            lpszPrivilege,   // privilege to lookup 
-            &luid))        // receives LUID of privilege
-        {
-            printf("LookupPrivilegeValue error: %u\n", GetLastError());
-            return FALSE;
-        }
-
-        tp.PrivilegeCount = 1;
-        tp.Privileges[0].Luid = luid;
-        if (bEnablePrivilege)
-            tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-        else
-            tp.Privileges[0].Attributes = 0;
-
-        // Enable the privilege or disable all privileges.
-
-        if (!::AdjustTokenPrivileges(
-            hToken,
-            FALSE,
-            &tp,
-            sizeof(TOKEN_PRIVILEGES),
-            (PTOKEN_PRIVILEGES)NULL,
-            (PDWORD)NULL))
-        {
-            printf("AdjustTokenPrivileges error: %u\n", GetLastError());
-            return FALSE;
-        }
-
-        if (GetLastError() == ERROR_NOT_ALL_ASSIGNED)
-
-        {
-            printf("The token does not have the specified privilege. \n");
-            return FALSE;
-        }
-
-        return TRUE;
-    }
-
-    //BOOL AdjustTokenPrivileges(
-    //    _In_ HANDLE TokenHandle,
-    //    _In_ std::map<std::wstring, DWORD> const& TokenPrivileges)
-    //{
-
-
-    //    for (auto& TokenPrivilege : TokenPrivileges)
-    //    {
-    //        if (true)
-    //        {
-
-    //        }
-    //    }
-
-
-    //    //::AdjustTokenPrivileges
-    //}
-
-
-    //BOOL ExecuteCodeWithImpersonatedContext(
-    //    HANDLE hToken,
-    //    std::function<void()> const& StartCodeCallBack)
-    //{
-    //    if (::ImpersonateLoggedOnUser(hToken))
-    //    {
-    //        StartCodeCallBack();
-
-    //        ::RevertToSelf();
-    //    }
-    //}
-
-    //
-
-
-    //class ImpersonatedContext
-    //{
-    //private:
-
-
-
-    //public:
-    //    ImpersonatedContext();
-
-    //    ~ImpersonatedContext()
-    //    {
-    //        
-    //    }
-
-    //
-
-    //};
-
-    //ImpersonatedContext::ImpersonatedContext()
-    //{
-    //}
-
-    //ImpersonatedContext::~ImpersonatedContext()
-    //{
-    //}
-}
+#include "M2.NSudo.h"
 
 int main()
 {
@@ -579,26 +469,21 @@ int main()
         MAXIMUM_ALLOWED,
         &hCurrentProcessToken))
     {
-        if (!NSudo::SetPrivilege(hCurrentProcessToken, SE_BACKUP_NAME, TRUE))
-        {
-            DWORD Error = ::GetLastError();
-            wprintf(
-                L"%s(%s) failed with error code %d\n",
-                L"NSudo::SetPrivilege",
-                SE_BACKUP_NAME,
-                Error);
-            return Error;
-        }
+        std::map<std::wstring, DWORD> Privileges;
 
-        if (!NSudo::SetPrivilege(hCurrentProcessToken, SE_RESTORE_NAME, TRUE))
+        Privileges.insert(std::pair(SE_BACKUP_NAME, SE_PRIVILEGE_ENABLED));
+        Privileges.insert(std::pair(SE_RESTORE_NAME, SE_PRIVILEGE_ENABLED));
+
+        DWORD ErrorCode = M2::NSudo::AdjustTokenPrivileges(
+            hCurrentProcessToken, Privileges);
+        if (ErrorCode != ERROR_SUCCESS)
         {
-            DWORD Error = ::GetLastError();
             wprintf(
                 L"%s(%s) failed with error code %d\n",
-                L"NSudo::SetPrivilege",
-                SE_RESTORE_NAME,
-                Error);
-            return Error;
+                L"NSudo::AdjustTokenPrivileges",
+                SE_BACKUP_NAME L" and " SE_RESTORE_NAME,
+                ErrorCode);
+            return ErrorCode;
         }
 
         ::CloseHandle(hCurrentProcessToken);

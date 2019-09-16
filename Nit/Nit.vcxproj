@@ -97,13 +97,17 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="M2.NSudo.cpp" />
     <ClCompile Include="Nit.cpp" />
     <ClCompile Include="NitCore.cpp" />
+    <ClCompile Include="NSudoAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DismCore.h" />
+    <ClInclude Include="M2.NSudo.h" />
     <ClInclude Include="NitCore.h" />
     <ClInclude Include="NitVersion.h" />
+    <ClInclude Include="NSudoAPI.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NitManifest.rc" />
