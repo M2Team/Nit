@@ -394,7 +394,7 @@ void EnumerateDirectory(
 
     if (INVALID_HANDLE_VALUE == hDirectory)
     {
-        wprintf(
+        std::wprintf(
             L"%s(%s) failed with error code %d\n",
             L"CreateFileW",
             DirectoryPath.c_str(),
@@ -409,7 +409,7 @@ void EnumerateDirectory(
             hDirectory);
         if (Status != ERROR_SUCCESS)
         {
-            wprintf(
+            std::wprintf(
                 L"%s(%s) failed with error code %d\n",
                 L"M2CreateFileEnumerator",
                 DirectoryPath.c_str(),
@@ -460,8 +460,17 @@ void EnumerateDirectory(
 
 #include "M2.NSudo.h"
 
+#include "NitVersion.h"
+
 int main()
 {
+    std::setlocale(LC_ALL, "chs");
+
+    std::wprintf(
+        L"Mouri_Naruto Nit [Version " NIT_VERSION_STRING L"]\n"
+        L"(C) M2-Team and Contributors. All rights reserved.\n"
+        L"\n");
+
     HANDLE hCurrentProcessToken = INVALID_HANDLE_VALUE;
 
     if (::OpenProcessToken(
@@ -478,7 +487,7 @@ int main()
             hCurrentProcessToken, Privileges);
         if (ErrorCode != ERROR_SUCCESS)
         {
-            wprintf(
+            std::wprintf(
                 L"%s(%s) failed with error code %d\n",
                 L"NSudo::AdjustTokenPrivileges",
                 SE_BACKUP_NAME L" and " SE_RESTORE_NAME,
@@ -491,14 +500,12 @@ int main()
     else
     {
         DWORD Error = ::GetLastError();
-        wprintf(
+        std::wprintf(
             L"%s failed with error code %d\n",
             L"OpenProcessToken",
             Error);
         return Error;
     }
-
-    std::setlocale(LC_ALL, "chs");
 
     const DWORD CompressionAlgorithm = FILE_PROVIDER_COMPRESSION_XPRESS4K;
 
@@ -545,7 +552,7 @@ int main()
 
                 if (_wcsicmp(StringNeedToCompare, ExclusionItem.c_str()) == 0)
                 {
-                    wprintf(L"Excluded - [%s]\n", FilePath.c_str());
+                    std::wprintf(L"Excluded - [%s]\n", FilePath.c_str());
                     return LoopType::Continue;
                 }
             }
@@ -575,7 +582,7 @@ int main()
                         CompressionAlgorithm);
                     if (!(Status == ERROR_SUCCESS || Status == ERROR_COMPRESSION_NOT_BENEFICIAL))
                     {
-                        wprintf(
+                        std::wprintf(
                             L"%s(%s) failed with error code %d\n",
                             L"Nit::WofSetFileCompressionAttribute",
                             FilePath.c_str(),
@@ -584,7 +591,7 @@ int main()
 
                     if (Status == ERROR_SUCCESS && Status != ERROR_COMPRESSION_NOT_BENEFICIAL)
                     {
-                        wprintf(L"Compressed - [%s]\n", FilePath.c_str());
+                        std::wprintf(L"Compressed - [%s]\n", FilePath.c_str());
                     }
                 }
 
@@ -592,7 +599,7 @@ int main()
             }
             else
             {
-                wprintf(
+                std::wprintf(
                     L"%s(%s) failed with error code %d\n",
                     L"CreateFileW",
                     FilePath.c_str(),
@@ -606,8 +613,8 @@ int main()
                 &FileSizeHigh);
             if (FileSizeLow == INVALID_FILE_SIZE && ::GetLastError() != NO_ERROR)
             {
-                wprintf(L"%s\n", GetMessageByID(::GetLastError()).c_str());
-                wprintf(L"Fuck - %s\n%llu\n", FilePath.c_str(), FileInformation.AllocationSize);
+                std::wprintf(L"%s\n", GetMessageByID(::GetLastError()).c_str());
+                std::wprintf(L"Fuck - %s\n%llu\n", FilePath.c_str(), FileInformation.AllocationSize);
                 TotalSize += FileInformation.AllocationSize;
             }
             else
@@ -636,7 +643,7 @@ int main()
             }
             else
             {
-                wprintf(L"Fuck - %s\n%llu\n", PathBuffer, FileEnumeratorInformation.AllocationSize);
+                std::wprintf(L"Fuck - %s\n%llu\n", PathBuffer, FileEnumeratorInformation.AllocationSize);
                 TotalSize += FileEnumeratorInformation.AllocationSize;
             }
 
@@ -644,13 +651,13 @@ int main()
 
             /*if (FileEnumeratorInformation.FileSize != 0 && FileEnumeratorInformation.AllocationSize == 0)
             {
-                wprintf(L"Need to process - [%s]\n", PathBuffer);
+                std::wprintf(L"Need to process - [%s]\n", PathBuffer);
             }*/
 
             return LoopType::Normal;
         });
 
-    wprintf(L"\n\nFinished.\n");
+    std::wprintf(L"\n\nFinished.\n");
 
     getchar();
 
