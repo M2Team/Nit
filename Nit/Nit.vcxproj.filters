@@ -61,11 +61,6 @@
     </Manifest>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="VC-LTL.xml">
-      <Filter>VC-LTL</Filter>
-    </Xml>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="VC-LTL.props">
       <Filter>VC-LTL</Filter>
     </None>

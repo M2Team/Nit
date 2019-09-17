@@ -29,12 +29,6 @@
 <Project ToolsVersion="4.0" 
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- 属性页配置 -->
-  <ItemGroup>
-    <PropertyPageSchema 
-      Include="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml" />
-  </ItemGroup>
-
   <!-- VC-LTL 工具集目录判定 -->
   <PropertyGroup>
     
