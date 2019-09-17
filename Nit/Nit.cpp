@@ -274,33 +274,6 @@ DWORD M2QueryFileEnumerator(
     return Win32Error;
 }
 
-DWORD M2CreateFile(
-    _Out_ PHANDLE lpFileHandle,
-    _In_ LPCWSTR lpFileName,
-    _In_ DWORD dwDesiredAccess,
-    _In_ DWORD dwShareMode,
-    _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-    _In_ DWORD dwCreationDisposition,
-    _In_ DWORD dwFlagsAndAttributes,
-    _In_opt_ HANDLE hTemplateFile)
-{
-    *lpFileHandle = ::CreateFileW(
-        lpFileName,
-        dwDesiredAccess,
-        dwShareMode,
-        lpSecurityAttributes,
-        dwCreationDisposition,
-        dwFlagsAndAttributes,
-        hTemplateFile);
-
-    return (INVALID_HANDLE_VALUE != *lpFileHandle)
-        ? ERROR_SUCCESS
-        : ::GetLastError();
-}
-
-#define WIN32_SUCCESS(Error) (Error == ERROR_SUCCESS)
-#define WIN32_ERROR(Status) (Error != ERROR_SUCCESS)
-
 // 判断目录是否是"."或".."
 FORCEINLINE bool WINAPI M2IsDots(
     _In_ LPCWSTR Name)
@@ -418,9 +391,9 @@ void EnumerateDirectory(
         else
         {
             M2_FILE_ENUMERATOR_INFORMATION FileEnumeratorInformation = { 0 };
-            while (WIN32_SUCCESS(M2QueryFileEnumerator(
+            while (ERROR_SUCCESS == M2QueryFileEnumerator(
                 &FileEnumeratorInformation,
-                FileEnumeratorHandle)))
+                FileEnumeratorHandle))
             {
                 if (M2IsDots(FileEnumeratorInformation.FileName))
                     continue;
@@ -560,7 +533,7 @@ int main()
             if (FileInformation.FileAttributes & FILE_ATTRIBUTE_DIRECTORY)
                 return LoopType::Normal;
 
-            HANDLE FileHandle = CreateFileW(
+            HANDLE FileHandle = ::CreateFileW(
                 (std::wstring(L"\\\\?\\") + FilePath).c_str(),
                 FILE_READ_DATA | FILE_READ_ATTRIBUTES,
                 FILE_SHARE_READ | FILE_SHARE_DELETE,
@@ -580,18 +553,20 @@ int main()
                     Status = Nit::WofSetFileCompressionAttribute(
                         FileHandle,
                         CompressionAlgorithm);
-                    if (!(Status == ERROR_SUCCESS || Status == ERROR_COMPRESSION_NOT_BENEFICIAL))
+                    if (Status != ERROR_COMPRESSION_NOT_BENEFICIAL)
                     {
-                        std::wprintf(
-                            L"%s(%s) failed with error code %d\n",
-                            L"Nit::WofSetFileCompressionAttribute",
-                            FilePath.c_str(),
-                            Status);
-                    }
-
-                    if (Status == ERROR_SUCCESS && Status != ERROR_COMPRESSION_NOT_BENEFICIAL)
-                    {
-                        std::wprintf(L"Compressed - [%s]\n", FilePath.c_str());
+                        if (Status == ERROR_SUCCESS)
+                        {
+                            std::wprintf(L"Compressed - [%s]\n", FilePath.c_str());
+                        }
+                        else
+                        {
+                            std::wprintf(
+                                L"%s(%s) failed with error code %d\n",
+                                L"Nit::WofSetFileCompressionAttribute",
+                                FilePath.c_str(),
+                                Status);
+                        }
                     }
                 }
 
@@ -605,54 +580,6 @@ int main()
                     FilePath.c_str(),
                     ::GetLastError());
             }
-
-
-            /*DWORD FileSizeHigh = 0;
-            DWORD FileSizeLow = ::GetCompressedFileSizeW(
-                (std::wstring(L"\\\\?\\") + FilePath).c_str(),
-                &FileSizeHigh);
-            if (FileSizeLow == INVALID_FILE_SIZE && ::GetLastError() != NO_ERROR)
-            {
-                std::wprintf(L"%s\n", GetMessageByID(::GetLastError()).c_str());
-                std::wprintf(L"Fuck - %s\n%llu\n", FilePath.c_str(), FileInformation.AllocationSize);
-                TotalSize += FileInformation.AllocationSize;
-            }
-            else
-            {
-                TotalSize += (static_cast<uint64_t>(FileSizeHigh) << 32) + FileSizeLow;
-            }*/
-
-            /*HANDLE FileHandle = INVALID_HANDLE_VALUE;
-            hr = M2CreateFile(
-                &FileHandle,
-                (std::wstring(L"\\\\?\\") + PathBuffer).c_str(),
-                FILE_READ_ATTRIBUTES,
-                FILE_SHARE_READ | FILE_SHARE_WRITE,
-                nullptr,
-                OPEN_EXISTING,
-                FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
-                nullptr);
-            if (WIN32_SUCCESS(hr))
-            {
-                UINT64 Size = 0;
-                GetFileCompressedSize(&Size, FileHandle);
-
-                TotalSize += Size;
-
-                CloseHandle(FileHandle);
-            }
-            else
-            {
-                std::wprintf(L"Fuck - %s\n%llu\n", PathBuffer, FileEnumeratorInformation.AllocationSize);
-                TotalSize += FileEnumeratorInformation.AllocationSize;
-            }
-
-            TotalSize += FileEnumeratorInformation.FileSize;*/
-
-            /*if (FileEnumeratorInformation.FileSize != 0 && FileEnumeratorInformation.AllocationSize == 0)
-            {
-                std::wprintf(L"Need to process - [%s]\n", PathBuffer);
-            }*/
 
             return LoopType::Normal;
         });
