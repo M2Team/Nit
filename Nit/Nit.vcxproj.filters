@@ -5,12 +5,6 @@
     <ClCompile Include="NitCore.cpp">
       <Filter>NitCore</Filter>
     </ClCompile>
-    <ClCompile Include="M2.NSudo.cpp">
-      <Filter>M2.NSudo</Filter>
-    </ClCompile>
-    <ClCompile Include="NSudoAPI.cpp">
-      <Filter>NSudoAPI</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DismCore.h" />
@@ -19,12 +13,6 @@
     </ClInclude>
     <ClInclude Include="NitCore.h">
       <Filter>NitCore</Filter>
-    </ClInclude>
-    <ClInclude Include="M2.NSudo.h">
-      <Filter>M2.NSudo</Filter>
-    </ClInclude>
-    <ClInclude Include="NSudoAPI.h">
-      <Filter>NSudoAPI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -36,12 +24,6 @@
     </Filter>
     <Filter Include="NitCore">
       <UniqueIdentifier>{6187d72a-5c8f-49ff-b089-b9062e0bfb10}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="M2.NSudo">
-      <UniqueIdentifier>{e030460c-b700-48fe-9ce0-fd2a88c80b32}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="NSudoAPI">
-      <UniqueIdentifier>{65035c84-4626-4399-98e2-79a8729dd515}</UniqueIdentifier>
     </Filter>
     <Filter Include="VC-LTL">
       <UniqueIdentifier>{09665289-8c80-4bd2-a4bf-7ba0362fe840}</UniqueIdentifier>

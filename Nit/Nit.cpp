@@ -431,11 +431,68 @@ void EnumerateDirectory(
 
 #include "NitCore.h"
 
-#include "M2.NSudo.h"
+#include <NSudoAPI.h>
 
 #include "NitVersion.h"
 
-int main0()
+/**
+ * Enables or disables privileges in the specified access token.
+ *
+ * @param TokenHandle A handle to the access token that contains the
+ *                    privileges to be modified. The handle must have
+ *                    TOKEN_ADJUST_PRIVILEGES access to the token.
+ * @param Privileges A key value map of privilege name and attributes.
+ *                   The attributes of a privilege can be a combination
+ *                   of the following values.
+ *                   SE_PRIVILEGE_ENABLED
+ *                       The function enables the privilege.
+ *                   SE_PRIVILEGE_REMOVED
+ *                       The privilege is removed from the list of
+ *                       privileges in the token.
+ *                   None
+ *                       The function disables the privilege.
+ * @return Standard Win32 Error. If the function succeeds, the return
+ *         value is ERROR_SUCCESS.
+ * @remark For more information, see AdjustTokenPrivileges.
+ */
+HRESULT NSudoAdjustTokenPrivileges(
+    HANDLE TokenHandle,
+    std::map<std::wstring, DWORD> const& Privileges)
+{
+    std::vector<LUID_AND_ATTRIBUTES> RawPrivileges;
+
+    for (auto const& Privilege : Privileges)
+    {
+        LUID_AND_ATTRIBUTES RawPrivilege;
+
+        if (!::LookupPrivilegeValueW(
+            nullptr, Privilege.first.c_str(), &RawPrivilege.Luid))
+        {
+            return ::GetLastError();
+        }
+
+        RawPrivilege.Attributes = Privilege.second;
+
+        RawPrivileges.push_back(RawPrivilege);
+    }
+
+    INSudoClient* pNSudoClient = nullptr;
+    HRESULT hr = ::NSudoCreateInstance(
+        IID_INSudoClient, reinterpret_cast<PVOID*>(&pNSudoClient));
+    if (hr == S_OK)
+    {
+        hr = pNSudoClient->AdjustTokenPrivileges(
+            TokenHandle,
+            &RawPrivileges[0],
+            static_cast<DWORD>(RawPrivileges.size()));
+    }
+
+    return hr;
+}
+
+
+
+int main()
 {
     std::setlocale(LC_ALL, "chs");
 
@@ -444,40 +501,63 @@ int main0()
         L"(C) M2-Team and Contributors. All rights reserved.\n"
         L"\n");
 
-    HANDLE hCurrentProcessToken = INVALID_HANDLE_VALUE;
-
-    if (::OpenProcessToken(
-        ::GetCurrentProcess(),
-        MAXIMUM_ALLOWED,
-        &hCurrentProcessToken))
+    INSudoClient* pNSudoClient = nullptr;
+    HRESULT hr = ::NSudoCreateInstance(
+        IID_INSudoClient, reinterpret_cast<PVOID*>(&pNSudoClient));
+    if (hr == S_OK)
     {
-        std::map<std::wstring, DWORD> Privileges;
-
-        Privileges.insert(std::pair(SE_BACKUP_NAME, SE_PRIVILEGE_ENABLED));
-        Privileges.insert(std::pair(SE_RESTORE_NAME, SE_PRIVILEGE_ENABLED));
-
-        DWORD ErrorCode = M2::NSudo::AdjustTokenPrivileges(
-            hCurrentProcessToken, Privileges);
-        if (ErrorCode != ERROR_SUCCESS)
+        HANDLE CurrentProcessToken = nullptr;
+        hr = pNSudoClient->OpenCurrentProcessToken(
+            MAXIMUM_ALLOWED, &CurrentProcessToken);
+        if (hr == S_OK)
         {
-            std::wprintf(
-                L"%s(%s) failed with error code %d\n",
-                L"NSudo::AdjustTokenPrivileges",
-                SE_BACKUP_NAME L" and " SE_RESTORE_NAME,
-                ErrorCode);
-            return ErrorCode;
+            std::map<std::wstring, DWORD> Privileges;
+
+            Privileges.insert(std::pair(
+                SE_BACKUP_NAME, SE_PRIVILEGE_ENABLED));
+            Privileges.insert(std::pair(
+                SE_RESTORE_NAME, SE_PRIVILEGE_ENABLED));
+
+            std::vector<LUID_AND_ATTRIBUTES> RawPrivileges;
+
+            for (auto const& Privilege : Privileges)
+            {
+                LUID_AND_ATTRIBUTES RawPrivilege;
+
+                if (!::LookupPrivilegeValueW(
+                    nullptr, Privilege.first.c_str(), &RawPrivilege.Luid))
+                {
+                    hr = ::HRESULT_FROM_WIN32(::GetLastError());
+                    break;
+                }
+
+                RawPrivilege.Attributes = Privilege.second;
+
+                RawPrivileges.push_back(RawPrivilege);
+            }
+
+            if (hr == S_OK)
+            {
+                hr = pNSudoClient->AdjustTokenPrivileges(
+                    CurrentProcessToken,
+                    &RawPrivileges[0],
+                    static_cast<DWORD>(RawPrivileges.size()));
+            }
+
+            ::CloseHandle(CurrentProcessToken);
         }
 
-        ::CloseHandle(hCurrentProcessToken);
+        pNSudoClient->Release();
     }
-    else
+
+    if (hr != S_OK)
     {
-        DWORD Error = ::GetLastError();
         std::wprintf(
-            L"%s failed with error code %d\n",
-            L"OpenProcessToken",
-            Error);
-        return Error;
+            L"%s(%s) failed with error code %d\n",
+            L"main::elevate",
+            SE_BACKUP_NAME L" and " SE_RESTORE_NAME,
+            hr);
+        return hr;
     }
 
     const DWORD CompressionAlgorithm = FILE_PROVIDER_COMPRESSION_XPRESS4K;
@@ -935,7 +1015,7 @@ int __ascii_wcsicmp(
 
 
 
-int main()
+int main1()
 {
     DWORD ErrorCode = ERROR_INVALID_PARAMETER;
 
