@@ -435,7 +435,7 @@ void EnumerateDirectory(
 
 #include "NitVersion.h"
 
-int main()
+int main0()
 {
     std::setlocale(LC_ALL, "chs");
 
@@ -587,6 +587,378 @@ int main()
     std::wprintf(L"\n\nFinished.\n");
 
     getchar();
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DWORD GetStringValue(
+    _In_ HKEY hKey,
+    _In_opt_ LPCWSTR lpValueName,
+    _Out_opt_ LPDWORD lpType,
+    _Out_opt_ LPBYTE lpData,
+    _Inout_opt_ LPDWORD lpcbData)
+{
+    return ::RegQueryValueExW(
+        hKey,
+        lpValueName,
+        nullptr,
+        lpType,
+        lpData,
+        lpcbData);
+}
+
+DWORD SetStringValue(
+    _In_ HKEY hKey,
+    _In_opt_ LPCWSTR lpValueName,
+    _In_ LPCWSTR Value)
+{
+    return ::RegSetValueExW(
+        hKey,
+        lpValueName,
+        0,
+        REG_SZ,
+        reinterpret_cast<CONST BYTE*>(Value),
+        static_cast<DWORD>(wcslen(Value) + 1) * sizeof(wchar_t));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+     * Disable C++ Object Copying
+     */
+class CDisableObjectCopying
+{
+protected:
+    CDisableObjectCopying() = default;
+    ~CDisableObjectCopying() = default;
+
+private:
+    CDisableObjectCopying(
+        const CDisableObjectCopying&) = delete;
+    CDisableObjectCopying& operator=(
+        const CDisableObjectCopying&) = delete;
+};
+
+/**
+ * Disable C++ Object Moving
+ */
+class CDisableObjectMoving
+{
+protected:
+    CDisableObjectMoving() = default;
+    ~CDisableObjectMoving() = default;
+
+private:
+    CDisableObjectMoving(
+        const CDisableObjectCopying&&) = delete;
+    CDisableObjectMoving& operator=(
+        const CDisableObjectCopying&&) = delete;
+};
+
+/**
+ * The implementation of smart object.
+ */
+template<typename TDerive, typename TObject, const TObject InvalidValue>
+class CObject : CDisableObjectCopying, CDisableObjectMoving
+{
+private:
+
+    TObject m_RawObject;
+
+protected:
+
+    TObject RawObject()
+    {
+        return this->m_RawObject;
+    }
+
+    void RawObject(TObject RawObject)
+    {
+        this->m_RawObject = RawObject;
+    }
+
+    TObject* RawObjectPointer()
+    {
+        return &this->m_RawObject;
+    }
+
+public:
+
+    TObject* operator&()
+    {
+        return this->RawObjectPointer();
+    }
+
+    operator TObject()
+    {
+        return this->RawObject();
+    }
+
+    TObject operator->() const
+    {
+        return this->RawObject();
+    }
+
+public:
+
+    CObject(TObject Object = InvalidValue)
+    {
+        this->RawObject(Object);
+    }
+
+    ~CObject()
+    {
+        this->Close();
+    }
+
+    TObject operator=(TObject Object)
+    {
+        if (Object != this->RawObject())
+        {
+            this->Close();
+            this->RawObject(Object);
+        }
+        return this->RawObject();
+    }
+
+    bool IsInvalid()
+    {
+        return (this->RawObject() == InvalidValue);
+    }
+
+    TObject Detach()
+    {
+        TObject Object = this->RawObject();
+        this->RawObject(InvalidValue);
+        return Object;
+    }
+
+    void Close()
+    {
+        if (!this->IsInvalid())
+        {
+            reinterpret_cast<TDerive*>(this)->CloseObject();
+            this->RawObject(InvalidValue);
+        }
+    }
+};
+
+class CRegistryKey : public CObject<CRegistryKey, HKEY, nullptr>
+{
+public:
+
+    void CloseObject()
+    {
+        ::RegCloseKey(this->RawObject());
+    }
+
+    CRegistryKey(HKEY KeyHandle = nullptr) :
+        CObject<CRegistryKey, HKEY, nullptr>(KeyHandle)
+    {
+    }
+
+    DWORD Get(
+        _In_opt_ LPCWSTR ValueName,
+        _Out_opt_ LPDWORD Type,
+        _Out_opt_ LPBYTE Data,
+        _Inout_opt_ LPDWORD DataLength)
+    {
+        return ::RegQueryValueExW(
+            this->RawObject(),
+            ValueName,
+            nullptr,
+            Type,
+            Data,
+            DataLength);
+    }
+
+    DWORD Set(
+        _In_opt_ LPCWSTR ValueName,
+        _In_ DWORD Type,
+        _In_opt_ LPCBYTE Data,
+        _In_ DWORD DataLength)
+    {
+        return ::RegSetValueExW(
+            this->RawObject(),
+            ValueName,
+            0,
+            Type,
+            Data,
+            DataLength);
+    }
+
+public:
+
+    DWORD GetDWORD(
+        _In_opt_ LPCWSTR ValueName,
+        _Out_ PDWORD Value)
+    {
+        DWORD ErrorCode = ERROR_INVALID_PARAMETER;
+
+        if (Value)
+        {
+            DWORD Type = REG_DWORD;
+            DWORD cbData = static_cast<DWORD>(sizeof(DWORD));
+
+            ErrorCode = this->Get(
+                ValueName,
+                &Type,
+                reinterpret_cast<LPBYTE>(Value),
+                &cbData);
+            if (Type != REG_DWORD)
+            {
+                ErrorCode = ERROR_UNSUPPORTED_TYPE;
+            }
+        }
+
+        return ErrorCode;
+    }
+
+    DWORD SetDWORD(
+        _In_opt_ LPCWSTR ValueName,
+        _In_ DWORD Value)
+    {
+        return this->Set(
+            ValueName,
+            REG_DWORD,
+            reinterpret_cast<LPCBYTE>(&Value),
+            static_cast<DWORD>(sizeof(DWORD)));
+    }
+
+    DWORD GetQWORD(
+        _In_opt_ LPCWSTR ValueName,
+        _Out_ PUINT64 Value)
+    {
+        DWORD ErrorCode = ERROR_INVALID_PARAMETER;
+
+        if (Value)
+        {
+            DWORD Type = REG_QWORD;
+            DWORD cbData = static_cast<DWORD>(sizeof(UINT64));
+
+            ErrorCode = this->Get(
+                ValueName,
+                &Type,
+                reinterpret_cast<LPBYTE>(Value),
+                &cbData);
+            if (Type != REG_QWORD)
+            {
+                ErrorCode = ERROR_UNSUPPORTED_TYPE;
+            }
+        }
+
+        return ErrorCode;
+    }
+
+    DWORD SetQWORD(
+        _In_opt_ LPCWSTR ValueName,
+        _In_ UINT64 Value)
+    {
+        return this->Set(
+            ValueName,
+            REG_QWORD,
+            reinterpret_cast<CONST BYTE*>(&Value),
+            static_cast<DWORD>(sizeof(UINT64)));
+    }
+};
+
+
+
+
+
+
+
+
+
+
+int __ascii_wcsicmp(
+    wchar_t const* const lhs,
+    wchar_t const* const rhs)
+{
+    unsigned short const* lhs_ptr = reinterpret_cast<unsigned short const*>(lhs);
+    unsigned short const* rhs_ptr = reinterpret_cast<unsigned short const*>(rhs);
+
+    int result;
+    int lhs_value;
+    int rhs_value;
+    do
+    {
+        lhs_value = __ascii_towlower(*lhs_ptr++);
+        rhs_value = __ascii_towlower(*rhs_ptr++);
+        result = lhs_value - rhs_value;
+    } while (result == 0 && lhs_value != 0);
+
+    return result;
+}
+
+
+
+
+
+int main()
+{
+    DWORD ErrorCode = ERROR_INVALID_PARAMETER;
+
+    CRegistryKey SetupKeyObject;
+    ErrorCode = ::RegCreateKeyExW(
+        HKEY_LOCAL_MACHINE,
+        L"SYSTEM\\Setup",
+        0,
+        nullptr,
+        REG_OPTION_NON_VOLATILE, // | REG_OPTION_BACKUP_RESTORE,
+        KEY_ALL_ACCESS | KEY_WOW64_64KEY,
+        nullptr,
+        &SetupKeyObject,
+        nullptr);
+    if (ErrorCode == ERROR_SUCCESS)
+    {
+        DWORD CompactOSMode = 0;
+        ErrorCode = SetupKeyObject.GetDWORD(L"Compact", &CompactOSMode);
+
+        wprintf(L"HKEY_LOCAL_MACHINE\\SYSTEM\\Setup -> Compact = 0x%08X", CompactOSMode);
+    }
+
+    ::getchar();
 
     return 0;
 }
