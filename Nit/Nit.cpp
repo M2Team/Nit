@@ -435,64 +435,7 @@ void EnumerateDirectory(
 
 #include "NitVersion.h"
 
-/**
- * Enables or disables privileges in the specified access token.
- *
- * @param TokenHandle A handle to the access token that contains the
- *                    privileges to be modified. The handle must have
- *                    TOKEN_ADJUST_PRIVILEGES access to the token.
- * @param Privileges A key value map of privilege name and attributes.
- *                   The attributes of a privilege can be a combination
- *                   of the following values.
- *                   SE_PRIVILEGE_ENABLED
- *                       The function enables the privilege.
- *                   SE_PRIVILEGE_REMOVED
- *                       The privilege is removed from the list of
- *                       privileges in the token.
- *                   None
- *                       The function disables the privilege.
- * @return Standard Win32 Error. If the function succeeds, the return
- *         value is ERROR_SUCCESS.
- * @remark For more information, see AdjustTokenPrivileges.
- */
-HRESULT NSudoAdjustTokenPrivileges(
-    HANDLE TokenHandle,
-    std::map<std::wstring, DWORD> const& Privileges)
-{
-    std::vector<LUID_AND_ATTRIBUTES> RawPrivileges;
-
-    for (auto const& Privilege : Privileges)
-    {
-        LUID_AND_ATTRIBUTES RawPrivilege;
-
-        if (!::LookupPrivilegeValueW(
-            nullptr, Privilege.first.c_str(), &RawPrivilege.Luid))
-        {
-            return ::GetLastError();
-        }
-
-        RawPrivilege.Attributes = Privilege.second;
-
-        RawPrivileges.push_back(RawPrivilege);
-    }
-
-    INSudoClient* pNSudoClient = nullptr;
-    HRESULT hr = ::NSudoCreateInstance(
-        IID_INSudoClient, reinterpret_cast<PVOID*>(&pNSudoClient));
-    if (hr == S_OK)
-    {
-        hr = pNSudoClient->AdjustTokenPrivileges(
-            TokenHandle,
-            &RawPrivileges[0],
-            static_cast<DWORD>(RawPrivileges.size()));
-    }
-
-    return hr;
-}
-
-
-
-int main()
+int main0()
 {
     std::setlocale(LC_ALL, "chs");
 
@@ -1011,21 +954,56 @@ int __ascii_wcsicmp(
     return result;
 }
 
+DWORD RegCreateKeyWrapper(
+    _In_ HKEY ExistingKeyHandle,
+    _In_ LPCWSTR SubKey,
+    _In_opt_ LPWSTR Class,
+    _In_ DWORD CreateOptions,
+    _In_ REGSAM DesiredAccess,
+    _In_opt_ CONST LPSECURITY_ATTRIBUTES SecurityAttributes,
+    _Out_ PHKEY NewKeyHandle,
+    _Out_opt_ LPDWORD Disposition)
+{
+    DWORD ErrorCode = ::RegCreateKeyExW(
+        ExistingKeyHandle,
+        SubKey,
+        0,
+        Class,
+        CreateOptions | REG_OPTION_BACKUP_RESTORE,
+        DesiredAccess,
+        SecurityAttributes,
+        NewKeyHandle,
+        Disposition);
+    if (ErrorCode != ERROR_SUCCESS)
+    {
+        ErrorCode = ::RegCreateKeyExW(
+            ExistingKeyHandle,
+            SubKey,
+            0,
+            Class,
+            CreateOptions & (-1 ^ REG_OPTION_BACKUP_RESTORE),
+            DesiredAccess,
+            SecurityAttributes,
+            NewKeyHandle,
+            Disposition);
+    }
+
+    return ErrorCode;
+}
 
 
 
 
-int main1()
+int main()
 {
     DWORD ErrorCode = ERROR_INVALID_PARAMETER;
 
     CRegistryKey SetupKeyObject;
-    ErrorCode = ::RegCreateKeyExW(
+    ErrorCode = ::RegCreateKeyWrapper(
         HKEY_LOCAL_MACHINE,
         L"SYSTEM\\Setup",
-        0,
         nullptr,
-        REG_OPTION_NON_VOLATILE, // | REG_OPTION_BACKUP_RESTORE,
+        REG_OPTION_NON_VOLATILE | REG_OPTION_BACKUP_RESTORE,
         KEY_ALL_ACCESS | KEY_WOW64_64KEY,
         nullptr,
         &SetupKeyObject,
@@ -1041,4 +1019,22 @@ int main1()
     ::getchar();
 
     return 0;
+}
+
+
+// NitSendCallback(SessionHandle,)
+
+HRESULT NitCleanupHandler(_In_ PVOID SessionHandle, _Inout_ UINT64 Size)
+{
+    // SessionHandle; Callback;
+}
+
+void xyz()
+{
+    bool Cleanup = true;
+
+    if (Cleanup)
+    {
+
+    }
 }
