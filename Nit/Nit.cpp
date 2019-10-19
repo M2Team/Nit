@@ -113,8 +113,8 @@ DWORD M2CreateFileEnumerator(
     *FileEnumeratorHandle = nullptr;
 
     PM2_FILE_ENUMERATOR_OBJECT Object =
-        reinterpret_cast<PM2_FILE_ENUMERATOR_OBJECT>(HeapAlloc(
-            GetProcessHeap(),
+        reinterpret_cast<PM2_FILE_ENUMERATOR_OBJECT>(::HeapAlloc(
+            ::GetProcessHeap(),
             HEAP_ZERO_MEMORY,
             sizeof(M2_FILE_ENUMERATOR_OBJECT)));
     if (!Object)
@@ -145,7 +145,7 @@ DWORD M2CloseFileEnumerator(
         reinterpret_cast<PM2_FILE_ENUMERATOR_OBJECT>(FileEnumeratorHandle);
 
     ::DeleteCriticalSection(&Object->CriticalSection);
-    ::HeapFree(GetProcessHeap(), 0, Object);
+    ::HeapFree(::GetProcessHeap(), 0, Object);
 
     return ERROR_SUCCESS;
 }
@@ -168,7 +168,7 @@ DWORD M2QueryFileEnumerator(
     if ((!FileEnumeratorHandle) || (!FileEnumeratorInformation))
         return ERROR_INVALID_PARAMETER;
 
-    DWORD Win32Error = ERROR_SUCCESS;
+    DWORD ErrorCode = ERROR_SUCCESS;
 
     PM2_FILE_ENUMERATOR_OBJECT Object =
         reinterpret_cast<PM2_FILE_ENUMERATOR_OBJECT>(FileEnumeratorHandle);
@@ -186,7 +186,7 @@ DWORD M2QueryFileEnumerator(
             Object->CurrentFileInfo,
             sizeof(Object->FileInfoBuffer)))
         {
-            Win32Error = ::GetLastError();
+            ErrorCode = ::GetLastError();
         }
     }
     else if (!Object->CurrentFileInfo->NextEntryOffset)
@@ -200,7 +200,7 @@ DWORD M2QueryFileEnumerator(
             Object->CurrentFileInfo,
             sizeof(Object->FileInfoBuffer)))
         {
-            Win32Error = ::GetLastError();
+            ErrorCode = ::GetLastError();
         }
     }
     else
@@ -213,7 +213,7 @@ DWORD M2QueryFileEnumerator(
             + Object->CurrentFileInfo->NextEntryOffset);
     }
 
-    if (Win32Error == ERROR_SUCCESS)
+    if (ErrorCode == ERROR_SUCCESS)
     {
         PFILE_ID_BOTH_DIR_INFO CurrentFileInfo = Object->CurrentFileInfo;
 
@@ -271,7 +271,7 @@ DWORD M2QueryFileEnumerator(
 
     ::LeaveCriticalSection(&Object->CriticalSection);
 
-    return Win32Error;
+    return ErrorCode;
 }
 
 // 判断目录是否是"."或".."
@@ -994,7 +994,7 @@ DWORD RegCreateKeyWrapper(
 
 
 
-int main()
+int main2()
 {
     DWORD ErrorCode = ERROR_INVALID_PARAMETER;
 
@@ -1024,17 +1024,55 @@ int main()
 
 // NitSendCallback(SessionHandle,)
 
-HRESULT NitCleanupHandler(_In_ PVOID SessionHandle, _Inout_ UINT64 Size)
-{
-    // SessionHandle; Callback;
-}
+//HRESULT NitCleanupHandler(_In_ PVOID SessionHandle, _Inout_ UINT64 Size)
+//{
+//    // SessionHandle; Callback;
+//}
+//
+//void xyz()
+//{
+//    bool Cleanup = true;
+//
+//    if (Cleanup)
+//    {
+//
+//    }
+//}
 
-void xyz()
+int main()
 {
-    bool Cleanup = true;
 
-    if (Cleanup)
+    HANDLE hDirectory = ::CreateFileW(
+        L"\\\\?\\C:\\Windows\\WinSxS\\Manifests",
+        SYNCHRONIZE | FILE_LIST_DIRECTORY,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        nullptr,
+        OPEN_EXISTING,
+        FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
+        nullptr);
+    if (INVALID_HANDLE_VALUE != hDirectory)
     {
+        M2_FILE_ENUMERATOR_HANDLE FileEnumeratorHandle = nullptr;
+        M2_FILE_ENUMERATOR_INFORMATION FileEnumeratorInformation = { 0 };
 
+        DWORD ErrorCode = M2CreateFileEnumerator(&FileEnumeratorHandle, hDirectory);
+        if (ErrorCode == ERROR_SUCCESS)
+        {
+            while (ERROR_SUCCESS == M2QueryFileEnumerator(
+                &FileEnumeratorInformation,
+                FileEnumeratorHandle))
+            {
+                wprintf(L"%s\n", FileEnumeratorInformation.FileName);
+                //FileList.insert(FileEnumeratorInformation.FileName);
+            }
+
+            M2CloseFileEnumerator(FileEnumeratorHandle);
+        }
+
+        ::CloseHandle(hDirectory);
     }
+
+    ::getchar();
+
+    return 0;
 }
