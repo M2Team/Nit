@@ -17,6 +17,8 @@
 #include <stdlib.h>
 #include <string>
 
+#include <strsafe.h>
+
 std::wstring GetMessageByID(HRESULT MessageID)
 {
     std::wstring MessageString;
@@ -60,8 +62,8 @@ typedef struct _M2_FILE_ENUMERATOR_INFORMATION
     DWORD FileAttributes;
     DWORD EaSize;
     LARGE_INTEGER FileId;
-    LPCWSTR ShortName;
-    LPCWSTR FileName;
+    WCHAR ShortName[14];
+    WCHAR FileName[256];
 } M2_FILE_ENUMERATOR_INFORMATION, * PM2_FILE_ENUMERATOR_INFORMATION;
 
 /**
@@ -70,11 +72,6 @@ typedef struct _M2_FILE_ENUMERATOR_INFORMATION
 typedef struct _M2_FILE_ENUMERATOR_OBJECT
 {
     HANDLE FileHandle;
-    WCHAR ShortNameEnd;
-    WCHAR FileNameEnd;
-    DWORD Reserved;
-    WCHAR* ShortNameEndAddress;
-    WCHAR* FileNameEndAddress;
     CRITICAL_SECTION CriticalSection;
     PFILE_ID_BOTH_DIR_INFO CurrentFileInfo;
     BYTE FileInfoBuffer[32768];
@@ -205,9 +202,6 @@ DWORD M2QueryFileEnumerator(
     }
     else
     {
-        *Object->ShortNameEndAddress = Object->ShortNameEnd;
-        *Object->FileNameEndAddress = Object->FileNameEnd;
-
         Object->CurrentFileInfo = reinterpret_cast<PFILE_ID_BOTH_DIR_INFO>(
             reinterpret_cast<ULONG_PTR>(Object->CurrentFileInfo)
             + Object->CurrentFileInfo->NextEntryOffset);
@@ -252,21 +246,29 @@ DWORD M2QueryFileEnumerator(
         FileEnumeratorInformation->FileId =
             CurrentFileInfo->FileId;
 
-        Object->ShortNameEndAddress =
-            CurrentFileInfo->ShortName +
-            (CurrentFileInfo->ShortNameLength / sizeof(WCHAR));
-        Object->ShortNameEnd = *Object->ShortNameEndAddress;
-        *Object->ShortNameEndAddress = L'\0';
-        FileEnumeratorInformation->ShortName =
-            CurrentFileInfo->ShortName;
+        ::StringCbCopyNW(
+            FileEnumeratorInformation->ShortName,
+            sizeof(FileEnumeratorInformation->ShortName),
+            CurrentFileInfo->ShortName,
+            CurrentFileInfo->ShortNameLength);
 
-        Object->FileNameEndAddress =
-            CurrentFileInfo->FileName +
-            (CurrentFileInfo->FileNameLength / sizeof(WCHAR));
-        Object->FileNameEnd = *Object->FileNameEndAddress;
-        *Object->FileNameEndAddress = L'\0';
-        FileEnumeratorInformation->FileName =
-            CurrentFileInfo->FileName;
+        ::StringCbCopyNW(
+            FileEnumeratorInformation->FileName,
+            sizeof(FileEnumeratorInformation->FileName),
+            CurrentFileInfo->FileName,
+            CurrentFileInfo->FileNameLength);
+
+        /*::wcsncpy_s(
+            FileEnumeratorInformation->ShortName,
+            sizeof(FileEnumeratorInformation->ShortName) / sizeof(WCHAR),
+            CurrentFileInfo->ShortName,
+            CurrentFileInfo->ShortNameLength / sizeof(WCHAR));
+
+        ::wcsncpy_s(
+            FileEnumeratorInformation->FileName,
+            sizeof(FileEnumeratorInformation->FileName) / sizeof(WCHAR),
+            CurrentFileInfo->FileName,
+            CurrentFileInfo->FileNameLength / sizeof(WCHAR));*/
     }
 
     ::LeaveCriticalSection(&Object->CriticalSection);
@@ -423,6 +425,9 @@ void EnumerateDirectory(
     }
 }
 
+#include <cwchar>
+#include <cwctype>
+
 #include <clocale>
 
 #include <set>
@@ -435,7 +440,63 @@ void EnumerateDirectory(
 
 #include "NitVersion.h"
 
-int main0()
+DWORD NitMatchFileName(
+    _In_ LPCWSTR FilePath,
+    _In_ SIZE_T FilePathLength,
+    _In_ LPCWSTR Pattern,
+    _In_ SIZE_T PatternLength)
+{
+    SIZE_T i = 0;
+    SIZE_T j = 0;
+    SIZE_T start = static_cast<SIZE_T>(-1);
+    SIZE_T match = 0;
+    while (i < FilePathLength)
+    {
+        if (j < PatternLength)
+        {
+            if (std::towlower(FilePath[i]) == std::towlower(Pattern[j]) ||
+                Pattern[j] == L'?')
+            {
+                ++i;
+                ++j;
+                continue;
+            }
+            else if (Pattern[j] == L'*')
+            {
+                start = j;
+                match = i;
+                ++j;
+                continue;
+            }
+        }
+
+        if (start != static_cast<SIZE_T>(-1))
+        {
+            j = start + 1;
+            ++match;
+            i = match;
+            continue;
+        }
+        else
+        {
+            return ERROR_NOT_FOUND;
+        }
+    }
+
+    while (j < PatternLength)
+    {
+        if (Pattern[j] != L'*')
+        {
+            return ERROR_NOT_FOUND;
+        }
+
+        ++j;
+    }
+
+    return ERROR_SUCCESS;
+}
+
+int main()
 {
     std::setlocale(LC_ALL, "chs");
 
@@ -507,31 +568,20 @@ int main0()
 
     std::set<std::wstring> ExclusionList;
 
-    ExclusionList.insert(L"\\ntldr");
-    ExclusionList.insert(L"\\cmldr");
-    ExclusionList.insert(L"\\BootMgr");
+    ExclusionList.insert(L"*\\??ldr");
+    ExclusionList.insert(L"*\\BootMgr");
 
-    ExclusionList.insert(L"\\aow.wim");
-    ExclusionList.insert(L"\\Boot\\BCD");
-    ExclusionList.insert(L"\\Boot\\BCD.LOG");
-    ExclusionList.insert(L"\\Boot\\bootstat.dat");
-    ExclusionList.insert(L"\\config\\DRIVERS");
-    ExclusionList.insert(L"\\config\\DRIVERS.LOG");
-    ExclusionList.insert(L"\\config\\SYSTEM");
-    ExclusionList.insert(L"\\config\\SYSTEM.LOG");
-    ExclusionList.insert(L"\\Windows\\bootstat.dat");
-    ExclusionList.insert(L"\\winload.efi");
-    ExclusionList.insert(L"\\winload.efi.mui");
-    ExclusionList.insert(L"\\winload.exe");
-    ExclusionList.insert(L"\\winload.exe.mui");
-    ExclusionList.insert(L"\\winresume.efi");
-    ExclusionList.insert(L"\\winresume.efi.mui");
-    ExclusionList.insert(L"\\winresume.exe");
-    ExclusionList.insert(L"\\winresume.exe.mui");
+    ExclusionList.insert(L"*\\aow.wim");
+    ExclusionList.insert(L"*\\Boot\\BCD*");
+    ExclusionList.insert(L"*\\Boot\\bootstat.dat");
+    ExclusionList.insert(L"*\\config\\DRIVERS*");
+    ExclusionList.insert(L"*\\config\\SYSTEM*");
+    ExclusionList.insert(L"*\\Windows\\bootstat.dat");
+    ExclusionList.insert(L"*\\winload.e??*");
+    ExclusionList.insert(L"*\\winresume.e??*");
 
-    ExclusionList.insert(L"\\WinSxS\\Backup\\");
-    ExclusionList.insert(L"\\WinSxS\\ManifestCache\\");
-    ExclusionList.insert(L"\\WinSxS\\Manifests\\");
+    ExclusionList.insert(L"*\\WinSxS\\Backup\\*");
+    ExclusionList.insert(L"*\\WinSxS\\Manifest*\\*");
 
     EnumerateDirectory(
         L"C:\\",
@@ -544,9 +594,11 @@ int main0()
 
             for (auto& ExclusionItem : ExclusionList)
             {
-                LPCWSTR StringNeedToCompare = FilePath.c_str() + FilePath.size() - ExclusionItem.size();
-
-                if (_wcsicmp(StringNeedToCompare, ExclusionItem.c_str()) == 0)
+                if (ERROR_SUCCESS == NitMatchFileName(
+                    FilePath.c_str(),
+                    FilePath.size(),
+                    ExclusionItem.c_str(),
+                    ExclusionItem.size()))
                 {
                     std::wprintf(L"Excluded - [%s]\n", FilePath.c_str());
                     return LoopType::Continue;
@@ -613,22 +665,6 @@ int main0()
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -930,30 +966,6 @@ public:
 
 
 
-
-
-
-
-int __ascii_wcsicmp(
-    wchar_t const* const lhs,
-    wchar_t const* const rhs)
-{
-    unsigned short const* lhs_ptr = reinterpret_cast<unsigned short const*>(lhs);
-    unsigned short const* rhs_ptr = reinterpret_cast<unsigned short const*>(rhs);
-
-    int result;
-    int lhs_value;
-    int rhs_value;
-    do
-    {
-        lhs_value = __ascii_towlower(*lhs_ptr++);
-        rhs_value = __ascii_towlower(*rhs_ptr++);
-        result = lhs_value - rhs_value;
-    } while (result == 0 && lhs_value != 0);
-
-    return result;
-}
-
 DWORD RegCreateKeyWrapper(
     _In_ HKEY ExistingKeyHandle,
     _In_ LPCWSTR SubKey,
@@ -1039,7 +1051,7 @@ int main2()
 //    }
 //}
 
-int main()
+int main1()
 {
 
     HANDLE hDirectory = ::CreateFileW(
@@ -1072,7 +1084,222 @@ int main()
         ::CloseHandle(hDirectory);
     }
 
-    ::getchar();
+    //::getchar();
+
+    return 0;
+}
+
+namespace Nit::Platform::Common
+{
+    /***
+*compares count wchar_t of strings,ignore case
+*
+*Purpose:
+*       Compare the two strings for ordinal order.  Stops the comparison
+*       when the following occurs: (1) strings differ, (2) the end of the
+*       strings is reached, or (3) count characters have been compared.
+*       For the purposes of the comparison, upper case characters are
+*       converted to lower case (wide-characters).
+*
+*Entry:
+*       wchar_t *lhs, *rhs - strings to compare
+*       size_t count - maximum number of characters to compare
+*
+*Exit:
+*       Returns -1 if lhs < rhs
+*       Returns 0 if lhs == rhs
+*       Returns 1 if lhs > rhs
+*       Returns _NLSCMPERROR if something went wrong
+*       This range of return values may differ from other *cmp/*coll functions.
+*
+*Exceptions:
+*       Input parameters are validated. Refer to the validation section of the function.
+*
+*******************************************************************************/
+    int wcsnicmp(
+        wchar_t const* const lhs,
+        wchar_t const* const rhs,
+        std::size_t const count)
+    {
+        if (count == 0)
+        {
+            return 0;
+        }
+
+        std::wint_t const* lhs_ptr = reinterpret_cast<std::wint_t const*>(lhs);
+        std::wint_t const* rhs_ptr = reinterpret_cast<std::wint_t const*>(rhs);
+
+        std::wint_t result;
+        std::wint_t lhs_value;
+        std::wint_t rhs_value;
+        std::size_t remaining = count;
+        do
+        {
+            lhs_value = std::towlower(*lhs_ptr++);
+            rhs_value = std::towlower(*rhs_ptr++);
+            result = lhs_value - rhs_value;
+        } while (result == 0 && lhs_value != 0 && --remaining != 0);
+
+        return result;
+    }
+
+    /***
+*compare wide-character strings, ignore case
+*
+*Purpose:
+*       _wcsicmp performs a case-insensitive wchar_t string comparision.
+*       _wcsicmp is independent of locale.
+*
+*Entry:
+*       wchar_t *lhs, *rhs - strings to compare
+*
+*Return:
+*       Returns <0 if lhs < rhs
+*       Returns 0 if lhs = rhs
+*       Returns >0 if lhs > rhs
+*       Returns _NLSCMPERROR if something went wrong
+*       This range of return values may differ from other *cmp/*coll functions.
+*
+*Exceptions:
+*       Input parameters are validated. Refer to the validation section of the function.
+*
+*******************************************************************************/
+    int wcsicmp(
+        wchar_t const* const lhs,
+        wchar_t const* const rhs)
+    {
+        std::wint_t const* lhs_ptr = reinterpret_cast<std::wint_t const*>(lhs);
+        std::wint_t const* rhs_ptr = reinterpret_cast<std::wint_t const*>(rhs);
+
+        std::wint_t result;
+        std::wint_t lhs_value;
+        std::wint_t rhs_value;
+        do
+        {
+            lhs_value = std::towlower(*lhs_ptr++);
+            rhs_value = std::towlower(*rhs_ptr++);
+            result = lhs_value - rhs_value;
+        } while (result == 0 && lhs_value != 0);
+
+        return result;
+    }
+}
+
+BOOL StrRegexMatch(LPCWSTR Str, LPCWSTR MatchStr)
+{
+    LPCWSTR Next;
+    //LPCWSTR MatchStr = *this;
+    LPCWSTR _Now = Str;
+    std::size_t cchNow = std::wcslen(Str);
+
+    std::size_t cchMatch;
+    int Flage = 1;
+
+    for (;;)
+    {
+        Next = std::wcschr(MatchStr, L'*');
+        if (!Next)
+        {
+            break;
+        }
+
+        //进行正则*匹配
+        cchMatch = Next - MatchStr;
+
+        for (int i = 0; *Str && i != Flage; i++, Str++)
+        {
+            if (Nit::Platform::Common::wcsnicmp(Str, MatchStr, cchMatch) == 0)
+            {
+                goto St;
+            }
+        }
+
+        return FALSE;
+
+    St:
+        Flage = -1;
+        Str += cchMatch;
+        MatchStr = Next + 1;
+    }
+
+    if (Flage != 1)
+    {
+        cchMatch = cchNow - (Str - _Now) - std::wcslen(MatchStr);
+
+        Str = cchMatch >= 0 ? Str + cchMatch : NULL;
+    }
+
+    if (Str)
+        return Nit::Platform::Common::wcsicmp(Str, MatchStr) == 0;
+    else
+        return 0;
+}
+
+
+
+bool wildcard_string_match(
+    char const* const string,
+    size_t const string_length,
+    char const* const pattern,
+    size_t const pattern_length)
+{
+    size_t i = 0;
+    size_t j = 0;
+    size_t start = static_cast<size_t>(-1);
+    size_t match = 0;
+    while (i < string_length)
+    {
+        if (j < pattern_length)
+        {
+            if (string[i] == pattern[j] || pattern[j] == L'?')
+            {
+                ++i;
+                ++j;
+                continue;
+            }
+            else if (pattern[j] == L'*')
+            {
+                start = j;
+                match = i;
+                ++j;
+                continue;
+            }
+        }
+        
+        if (start != static_cast<size_t>(-1))
+        {
+            j = start + 1;
+            ++match;
+            i = match;
+            continue;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    while (j < pattern_length)
+    {
+        if (pattern[j] != L'*')
+        {
+            return false;
+        }
+
+        ++j;
+    }
+
+    return true;
+}
+
+bool isMatch(std::string s, std::string p)
+{
+    return wildcard_string_match(s.c_str(), s.size(), p.c_str(), p.size());
+}
+
+int main3()
+{
+    isMatch("abefcdgiescdfimde", "ab*cd?i*de");
 
     return 0;
 }
