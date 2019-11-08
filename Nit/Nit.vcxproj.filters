@@ -5,6 +5,9 @@
     <ClCompile Include="NitCore.cpp">
       <Filter>NitCore</Filter>
     </ClCompile>
+    <ClCompile Include="pugixml.cpp">
+      <Filter>pugixml</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DismCore.h" />
@@ -13,6 +16,12 @@
     </ClInclude>
     <ClInclude Include="NitCore.h">
       <Filter>NitCore</Filter>
+    </ClInclude>
+    <ClInclude Include="pugiconfig.hpp">
+      <Filter>pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="pugixml.hpp">
+      <Filter>pugixml</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -27,6 +36,9 @@
     </Filter>
     <Filter Include="VC-LTL">
       <UniqueIdentifier>{09665289-8c80-4bd2-a4bf-7ba0362fe840}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pugixml">
+      <UniqueIdentifier>{ed219d2e-8e26-4d51-86d6-040cf0abc704}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

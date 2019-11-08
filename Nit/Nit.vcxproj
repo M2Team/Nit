@@ -105,11 +105,14 @@
   <ItemGroup>
     <ClCompile Include="Nit.cpp" />
     <ClCompile Include="NitCore.cpp" />
+    <ClCompile Include="pugixml.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DismCore.h" />
     <ClInclude Include="NitCore.h" />
     <ClInclude Include="NitVersion.h" />
+    <ClInclude Include="pugiconfig.hpp" />
+    <ClInclude Include="pugixml.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NitManifest.rc" />
