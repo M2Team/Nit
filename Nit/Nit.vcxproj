@@ -119,6 +119,7 @@
     <Manifest Include="NitManifest.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Nit.cpp.1" />
     <None Include="VC-LTL.props" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

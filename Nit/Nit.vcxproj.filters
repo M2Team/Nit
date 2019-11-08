@@ -46,5 +46,6 @@
     <None Include="VC-LTL.props">
       <Filter>VC-LTL</Filter>
     </None>
+    <None Include="Nit.cpp.1" />
   </ItemGroup>
 </Project>
