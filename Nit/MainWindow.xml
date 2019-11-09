@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window Name="MainWindow" Width="640" Height="480">
+  <Button Name="TestButton" Left="32" Right="32" Top="32" Bottom="32"/>
+</Window>

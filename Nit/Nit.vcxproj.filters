@@ -40,6 +40,9 @@
     <Filter Include="pugixml">
       <UniqueIdentifier>{ed219d2e-8e26-4d51-86d6-040cf0abc704}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Yuri">
+      <UniqueIdentifier>{1262d6f9-d0ab-49f2-ad1a-65752a562e92}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NitVersion.rc">
@@ -59,5 +62,8 @@
       <Filter>VC-LTL</Filter>
     </None>
     <None Include="Nit.cpp.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="MainWindow.xml" />
   </ItemGroup>
 </Project>
